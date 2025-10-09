@@ -5,6 +5,7 @@ A comprehensive MySQL database system for managing an alumni-student mentorship 
 ## 📋 Overview
 
 The Alumni Mentor Portal facilitates mentorship connections between experienced alumni and current students. It includes:
+
 - Alumni profiles with experience and achievements
 - Student profiles with academic information
 - Mentorship session tracking
@@ -16,6 +17,7 @@ The Alumni Mentor Portal facilitates mentorship connections between experienced 
 ## 🗄️ Database Schema
 
 ### Core Tables
+
 - **Alumni** - Alumni information and professional details
 - **Student** - Student academic and contact information
 - **Skill** - Skills database with categories
@@ -25,6 +27,7 @@ The Alumni Mentor Portal facilitates mentorship connections between experienced 
 - **Feedback** - Session feedback and ratings
 
 ### Auxiliary Tables
+
 - **Provides** - Mentor-mentee relationships
 - **Alumni_Skills** - Alumni skill associations
 - **Student_Skills** - Student skill interests
@@ -34,6 +37,7 @@ The Alumni Mentor Portal facilitates mentorship connections between experienced 
 ## 🚀 Quick Setup
 
 ### Prerequisites
+
 - MySQL 8.0 or higher
 - MySQL command-line client or MySQL Workbench
 - Root or user privileges with CREATE, INSERT, TRIGGER permissions
@@ -41,6 +45,7 @@ The Alumni Mentor Portal facilitates mentorship connections between experienced 
 ### Installation Steps
 
 1. **Clone or download the database files**
+
    ```bash
    # Make sure you have the required SQL files:
    # - database_schema.sql
@@ -48,17 +53,21 @@ The Alumni Mentor Portal facilitates mentorship connections between experienced 
    ```
 
 2. **(Optional) Drop existing database** - Use this only if you want a fresh install
+
    ```bash
    mysql -u root -p -e "DROP DATABASE IF EXISTS mentor_alumni_portal;"
    ```
 
 3. **Create the database**
+
    ```bash
    mysql -u root -p < database_schema.sql
    ```
+
    Enter your MySQL password when prompted.
 
 4. **Install triggers**
+
    ```bash
    mysql -u root -p mentor_alumni_portal < database_triggers.sql
    ```
@@ -82,6 +91,7 @@ dbms/
 ## 🎯 Key Features & Triggers
 
 ### Data Validation Triggers
+
 - **Email Uniqueness**: Prevents duplicate emails for students and alumni
 - **Phone Number Format**: Validates 10-digit phone numbers
 - **Rating Constraints**: Ensures feedback ratings are between 1-5
@@ -89,12 +99,14 @@ dbms/
 - **Academic Year**: Validates year of study (1-4)
 
 ### Automation Triggers
+
 - **Experience Calculation**: Automatically calculates years of experience from graduation year
 - **Relationship Creation**: Auto-creates mentor-mentee relationships after first session
 - **Feedback Logging**: Automatically logs all feedback entries
 - **Premium Mentor Status**: Updates mentor status based on ratings and session count
 
 ### Business Logic Triggers
+
 - **Referential Integrity**: Enforces foreign key constraints
 - **Cascade Operations**: Maintains data consistency across related tables
 - **Achievement Tracking**: Awards distinguished status for alumni with 5+ achievements
@@ -102,6 +114,7 @@ dbms/
 ## 📊 Sample Data
 
 The database includes sample data for testing:
+
 - **6 Alumni**: Various roles (Software Engineer, Data Scientist, Product Manager, etc.)
 - **6 Students**: From different departments and years
 - **6 Skills**: Mix of technical and soft skills
@@ -119,7 +132,9 @@ mysql -u root -p < validate.sql
 ```
 
 ### Expected Output
+
 The validation script demonstrates all trigger functionality by:
+
 - ✅ Validating student data (email uniqueness, phone format, year of study)
 - ✅ Auto-calculating alumni experience from graduation year
 - ✅ Auto-creating mentor-mentee relationships when sessions are added
@@ -133,25 +148,31 @@ The script shows before/after counts for each operation to prove triggers are wo
 ## 💻 Usage Examples
 
 ### Adding a New Student
+
 ```sql
 INSERT INTO Student VALUES ('STU007', 'John Doe', 9876543210, 'john@pes.edu', 'CSE', 3);
 ```
+
 - Trigger validates email uniqueness
 - Trigger validates phone number format
 - Trigger validates year of study
 
 ### Scheduling a Mentorship Session
+
 ```sql
 INSERT INTO MentorshipSession VALUES ('PESALU001', 'STU007', '2025-12-01', 'Online', '1 hour');
 ```
+
 - Trigger validates alumni and student existence
 - Trigger auto-creates relationship in Provides table
 - Trigger updates mentorship request status if pending
 
 ### Submitting Feedback
+
 ```sql
 INSERT INTO Feedback VALUES ('PESALU001', 'STU007', '2025-12-01', 'Great session!', 5);
 ```
+
 - Trigger validates rating (1-5)
 - Trigger validates date (not in future)
 - Trigger logs feedback automatically
@@ -160,11 +181,13 @@ INSERT INTO Feedback VALUES ('PESALU001', 'STU007', '2025-12-01', 'Great session
 ## 🔧 Common Operations
 
 ### View All Alumni
+
 ```sql
 SELECT * FROM Alumni;
 ```
 
 ### View Student Sessions
+
 ```sql
 SELECT s.Name, m.Date, m.Mode, m.Duration
 FROM MentorshipSession m
@@ -173,6 +196,7 @@ WHERE s.Student_ID = 'PESSTU001';
 ```
 
 ### View Average Ratings for Alumni
+
 ```sql
 SELECT a.Name, AVG(f.Rating) AS Avg_Rating, COUNT(*) AS Total_Sessions
 FROM Alumni a
@@ -182,84 +206,10 @@ ORDER BY Avg_Rating DESC;
 ```
 
 ### Find Alumni by Industry
+
 ```sql
 SELECT a.Name, i.Industry_Name, i.Location, i.Sector
 FROM Alumni a
 JOIN Industry i ON a.Alumni_ID = i.Alumni_ID
 WHERE i.Sector = 'Software';
 ```
-
-## 🚨 Error Handling
-
-The triggers provide clear error messages for common issues:
-
-- **"Email already registered for another student"** - Duplicate email attempt
-- **"Phone number must be 10 digits"** - Invalid phone format
-- **"Rating must be between 1 and 5"** - Invalid feedback rating
-- **"Feedback date cannot be in the future"** - Future date validation
-- **"Alumni does not exist"** - Referential integrity error
-
-## 🔄 Maintenance
-
-### Adding New Triggers
-1. Create trigger in `database_triggers.sql`
-2. Test with `validation.sql`
-3. Update documentation
-
-### Backup Database
-```bash
-mysqldump -u root -p mentor_alumni_portal > backup.sql
-```
-
-### Restore Database
-```bash
-mysql -u root -p mentor_alumni_portal < backup.sql
-```
-
-### View All Triggers
-```sql
-SHOW TRIGGERS;
-```
-
-### Disable a Trigger
-```sql
-DISABLE TRIGGER trigger_name ON table_name;
-```
-
-## 📈 Performance Considerations
-
-- Indexes are automatically created on primary keys and foreign keys
-- Consider adding indexes on frequently queried columns (Email, Name, Department)
-- Monitor trigger execution for performance impact
-- Use appropriate data types for optimal storage
-
-## 🛡️ Security Notes
-
-- Password should not be entered on command line in production
-- Consider creating a dedicated database user with limited privileges
-- Validate all inputs at application level as well
-- Regular backups recommended
-
-## 🤝 Contributing
-
-To contribute to the database schema:
-1. Test all changes thoroughly
-2. Update this README
-3. Add appropriate triggers for new tables
-4. Run validation script
-
-## 📞 Support
-
-For issues or questions:
-1. Check the validation output
-2. Review trigger error messages
-3. Ensure MySQL version compatibility
-4. Verify user permissions
-
-## 📄 License
-
-This project is for educational purposes. Use as per your institution's guidelines.
-
----
-
-**Database successfully created with automated triggers for data integrity and business logic enforcement!**
