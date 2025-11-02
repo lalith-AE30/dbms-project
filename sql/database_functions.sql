@@ -1,6 +1,6 @@
--- Function to calculate average rating for an alumni
+-- Function to calculate average rating for an alumni (Updated to match actual database structure)
 DELIMITER //
-CREATE FUNCTION GetAlumniAverageRating(alumni_id VARCHAR(10))
+CREATE FUNCTION GetAlumniAverageRating(alumni_id VARCHAR(20))
 RETURNS DECIMAL(3,2)
 DETERMINISTIC
 READS SQL DATA
@@ -15,9 +15,9 @@ BEGIN
 END //
 DELIMITER ;
 
--- Function to count total sessions for an alumni
+-- Function to count total sessions for an alumni (Updated to match actual database structure)
 DELIMITER //
-CREATE FUNCTION GetAlumniSessionCount(alumni_id VARCHAR(10))
+CREATE FUNCTION GetAlumniSessionCount(alumni_id VARCHAR(20))
 RETURNS INT
 DETERMINISTIC
 READS SQL DATA

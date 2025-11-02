@@ -142,7 +142,7 @@ BEGIN
     SELECT
         a.Alumni_ID,
         a.Name,
-        a.Current_Position,
+        a.Current_Designation,
         i.Industry_Name,
         fn_calculate_skill_match(a.Alumni_ID, p_student_id) AS Match_Percentage,
         (SELECT AVG(Rating) FROM Feedback f WHERE f.Alumni_ID = a.Alumni_ID) AS Avg_Rating,
@@ -166,7 +166,7 @@ BEGIN
     SELECT
         a.Alumni_ID,
         a.Name,
-        a.Current_Position,
+        a.Current_Designation,
         a.Years_of_Experience,
         COUNT(DISTINCT ms.Student_ID) AS Total_Mentees,
         COUNT(ms.Session_ID) AS Total_Sessions,
@@ -348,7 +348,7 @@ SELECT
     p.Status AS Relationship_Status,
     COUNT(ms.Session_ID) AS Session_Count,
     AVG(f.Rating) AS Average_Rating,
-    MAX(ms.Date) AS_Last_Session_Date
+    MAX(ms.Session_Date) AS_Last_Session_Date
 FROM Alumni a
 JOIN Provides p ON a.Alumni_ID = p.Alumni_ID
 JOIN Student s ON p.Student_ID = s.Student_ID

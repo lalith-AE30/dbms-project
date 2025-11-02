@@ -10,7 +10,7 @@ USE mentor_alumni_portal;
 -- CORE TABLES
 -- =====================================================
 
--- 1. Alumni Table
+-- 1. Alumni Table (Updated to match actual database structure)
 CREATE TABLE Alumni (
     Alumni_ID VARCHAR(20) PRIMARY KEY,
     Name VARCHAR(100) NOT NULL,
@@ -18,6 +18,8 @@ CREATE TABLE Alumni (
     Email VARCHAR(100) UNIQUE NOT NULL,
     Graduation_Year INT,
     Current_Designation VARCHAR(100),
+    Company VARCHAR(100),
+    Location VARCHAR(100),
     Years_of_Experience INT
 );
 
@@ -61,26 +63,26 @@ CREATE TABLE Achievement (
     FOREIGN KEY (Alumni_ID) REFERENCES Alumni(Alumni_ID)
 );
 
--- 6. MentorshipSession Table
+-- 6. MentorshipSession Table (Updated to match actual database structure)
 CREATE TABLE MentorshipSession (
+    Session_ID VARCHAR(20) PRIMARY KEY,
     Alumni_ID VARCHAR(20),
     Student_ID VARCHAR(20),
-    Date DATE,
-    Mode VARCHAR(50),
-    Duration VARCHAR(50),
-    PRIMARY KEY (Alumni_ID, Student_ID, Date),
+    Session_Date DATE,
+    Duration_Minutes INT,
+    Topic VARCHAR(200),
     FOREIGN KEY (Alumni_ID) REFERENCES Alumni(Alumni_ID),
     FOREIGN KEY (Student_ID) REFERENCES Student(Student_ID)
 );
 
--- 7. Feedback Table
+-- 7. Feedback Table (Updated to match actual database structure)
 CREATE TABLE Feedback (
+    Feedback_ID VARCHAR(20) PRIMARY KEY,
     Alumni_ID VARCHAR(20),
     Student_ID VARCHAR(20),
+    Rating INT CHECK (Rating >= 1 AND Rating <= 5),
     Date DATE,
     Comments TEXT,
-    Rating INT CHECK (Rating >= 1 AND Rating <= 5),
-    PRIMARY KEY (Alumni_ID, Student_ID, Date),
     FOREIGN KEY (Alumni_ID) REFERENCES Alumni(Alumni_ID),
     FOREIGN KEY (Student_ID) REFERENCES Student(Student_ID)
 );
@@ -134,23 +136,23 @@ INSERT INTO Achievement VALUES
 ('PESACH005', 'PESALU005', 'AWS', 'Top Cloud Architect', 'For contributions to DevOps community', 2019),
 ('PESACH006', 'PESALU006', 'Tableau', 'Data Visualization Pro', 'Outstanding dashboards', 2024);
 
--- Insert Mentorship Sessions
+-- Insert Mentorship Sessions (Updated to match actual database structure)
 INSERT INTO MentorshipSession VALUES
-('PESALU001', 'PESSTU001', '2025-09-15', 'Online', '1 hour'),
-('PESALU002', 'PESSTU002', '2025-09-20', 'Offline', '2 hours'),
-('PESALU003', 'PESSTU003', '2025-09-25', 'Online', '45 mins'),
-('PESALU004', 'PESSTU004', '2025-09-28', 'Offline', '1.5 hours'),
-('PESALU005', 'PESSTU005', '2025-09-30', 'Online', '1 hour'),
-('PESALU006', 'PESSTU006', '2025-10-01', 'Online', '1 hour');
+('SES001', 'PESALU001', 'PESSTU001', '2025-09-15', 60, 'Career Guidance'),
+('SES002', 'PESALU002', 'PESSTU002', '2025-09-20', 120, 'Data Science Path'),
+('SES003', 'PESALU003', 'PESSTU003', '2025-09-25', 45, 'Product Management'),
+('SES004', 'PESALU004', 'PESSTU004', '2025-09-28', 90, 'UX Design Portfolio'),
+('SES005', 'PESALU005', 'PESSTU005', '2025-09-30', 60, 'Cloud Computing'),
+('SES006', 'PESALU006', 'PESSTU006', '2025-10-01', 60, 'Analytics Fundamentals');
 
--- Insert Feedback Data
+-- Insert Feedback Data (Updated to match actual database structure)
 INSERT INTO Feedback VALUES
-('PESALU001', 'PESSTU001', '2025-09-15', 'Very helpful session!', 5),
-('PESALU002', 'PESSTU002', '2025-09-20', 'Great insights shared.', 4),
-('PESALU003', 'PESSTU003', '2025-09-25', 'Loved the product tips!', 5),
-('PESALU004', 'PESSTU004', '2025-09-28', 'Very interactive session.', 4),
-('PESALU005', 'PESSTU005', '2025-09-30', 'Learned a lot about cloud.', 5),
-('PESALU006', 'PESSTU006', '2025-10-01', 'Good overview of analytics.', 4);
+('FDB001', 'PESALU001', 'PESSTU001', 5, '2025-09-15', 'Very helpful session!'),
+('FDB002', 'PESALU002', 'PESSTU002', 4, '2025-09-20', 'Great insights shared.'),
+('FDB003', 'PESALU003', 'PESSTU003', 5, '2025-09-25', 'Loved the product tips!'),
+('FDB004', 'PESALU004', 'PESSTU004', 4, '2025-09-28', 'Very interactive session.'),
+('FDB005', 'PESALU005', 'PESSTU005', 5, '2025-09-30', 'Learned a lot about cloud.'),
+('FDB006', 'PESALU006', 'PESSTU006', 4, '2025-10-01', 'Good overview of analytics.');
 
 -- Display success message
 SELECT 'Database schema created successfully!' AS Status;

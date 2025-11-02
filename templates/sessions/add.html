@@ -1,0 +1,84 @@
+{% extends "base.html" %}
+
+{% block title %}Add Session - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Add Mentorship Session</h1>
+    <a href="{{ url_for('list_sessions') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Sessions
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        <form method="POST">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="session_id" class="form-label">Session ID</label>
+                        <input type="text" class="form-control" id="session_id" name="session_id" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="session_date" class="form-label">Session Date</label>
+                        <input type="date" class="form-control" id="session_date" name="session_date" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="alumni_id" class="form-label">Alumni</label>
+                        <select class="form-select" id="alumni_id" name="alumni_id" required>
+                            <option value="">Select Alumni</option>
+                            {% if alumni %}
+                                {% for alum in alumni %}
+                                <option value="{{ alum.Alumni_ID }}">{{ alum.Name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="student_id" class="form-label">Student</label>
+                        <select class="form-select" id="student_id" name="student_id" required>
+                            <option value="">Select Student</option>
+                            {% if students %}
+                                {% for student in students %}
+                                <option value="{{ student.Student_ID }}">{{ student.Name }}</option>
+                                {% endfor %}
+                            {% endif %}
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="duration" class="form-label">Duration (minutes)</label>
+                        <input type="number" class="form-control" id="duration" name="duration" min="1" required>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label for="topic" class="form-label">Topic</label>
+                        <input type="text" class="form-control" id="topic" name="topic">
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-between">
+                <a href="{{ url_for('list_sessions') }}" class="btn btn-secondary">Cancel</a>
+                <button type="submit" class="btn btn-primary">
+                    <i class="fas fa-save"></i> Add Session
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

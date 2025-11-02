@@ -32,14 +32,15 @@ BEGIN
     SELECT 'Student registered successfully' AS Message;
 END$$
 
--- Procedure 2: Schedule Mentorship Session
+-- Procedure 2: Schedule Mentorship Session (Updated to match actual database structure)
 -- Creates a new mentorship session and handles relationships
 CREATE PROCEDURE ScheduleSession(
+    IN p_Session_ID VARCHAR(20),
     IN p_Alumni_ID VARCHAR(20),
     IN p_Student_ID VARCHAR(20),
-    IN p_Date DATE,
-    IN p_Mode VARCHAR(50),
-    IN p_Duration VARCHAR(50)
+    IN p_Session_Date DATE,
+    IN p_Duration_Minutes INT,
+    IN p_Topic VARCHAR(200)
 )
 BEGIN
     DECLARE v_alumni_exists INT;
@@ -57,20 +58,21 @@ BEGIN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Student not found';
     END IF;
 
-    -- Insert session (trigger auto-creates relationship)
-    INSERT INTO MentorshipSession VALUES (p_Alumni_ID, p_Student_ID, p_Date, p_Mode, p_Duration);
+    -- Insert session with unique ID (trigger auto-creates relationship)
+    INSERT INTO MentorshipSession VALUES (p_Session_ID, p_Alumni_ID, p_Student_ID, p_Session_Date, p_Duration_Minutes, p_Topic);
 
     SELECT 'Session scheduled successfully' AS Message;
 END$$
 
--- Procedure 3: Submit Feedback
+-- Procedure 3: Submit Feedback (Updated to match actual database structure)
 -- Submits feedback for a mentorship session
 CREATE PROCEDURE SubmitFeedback(
+    IN p_Feedback_ID VARCHAR(20),
     IN p_Alumni_ID VARCHAR(20),
     IN p_Student_ID VARCHAR(20),
+    IN p_Rating INT,
     IN p_Date DATE,
-    IN p_Comments TEXT,
-    IN p_Rating INT
+    IN p_Comments TEXT
 )
 BEGIN
     DECLARE v_session_exists INT;
@@ -78,14 +80,14 @@ BEGIN
     -- Check if session exists
     SELECT COUNT(*) INTO v_session_exists
     FROM MentorshipSession
-    WHERE Alumni_ID = p_Alumni_ID AND Student_ID = p_Student_ID AND Date = p_Date;
+    WHERE Alumni_ID = p_Alumni_ID AND Student_ID = p_Student_ID AND Session_Date = p_Date;
 
     IF v_session_exists = 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'Session not found';
     END IF;
 
-    -- Insert feedback (triggers handle validation and logging)
-    INSERT INTO Feedback VALUES (p_Alumni_ID, p_Student_ID, p_Date, p_Comments, p_Rating);
+    -- Insert feedback with unique ID (triggers handle validation and logging)
+    INSERT INTO Feedback VALUES (p_Feedback_ID, p_Alumni_ID, p_Student_ID, p_Rating, p_Date, p_Comments);
 
     SELECT 'Feedback submitted successfully' AS Message;
 END$$
@@ -117,9 +119,9 @@ CREATE PROCEDURE GetStudentSessions(
 )
 BEGIN
     SELECT
-        m.Date,
-        m.Mode,
-        m.Duration,
+        m.Session_Date,
+        m.Duration_Minutes,
+        m.Topic,
         a.Name AS Alumni_Name,
         a.Current_Designation,
         i.Industry_Name,
@@ -129,10 +131,10 @@ BEGIN
     JOIN Alumni a ON m.Alumni_ID = a.Alumni_ID
     LEFT JOIN Feedback f ON m.Alumni_ID = f.Alumni_ID
                         AND m.Student_ID = f.Student_ID
-                        AND m.Date = f.Date
+                        AND m.Session_Date = f.Date
     LEFT JOIN Industry i ON a.Alumni_ID = i.Alumni_ID
     WHERE m.Student_ID = p_Student_ID
-    ORDER BY m.Date DESC;
+    ORDER BY m.Session_Date DESC;
 END$$
 
 -- Procedure 6: Get Mentor Statistics

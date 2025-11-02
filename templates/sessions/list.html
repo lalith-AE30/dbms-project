@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}Mentorship Sessions - Alumni Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2">Mentorship Sessions</h1>
+    <a href="{{ url_for('add_session') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add Session
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-body">
+        {% if sessions %}
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>Session ID</th>
+                        <th>Date</th>
+                        <th>Duration</th>
+                        <th>Topic</th>
+                        <th>Alumni</th>
+                        <th>Student</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for session in sessions %}
+                    <tr>
+                        <td>{{ session.Session_ID }}</td>
+                        <td>{{ session.Session_Date.strftime('%Y-%m-%d') if session.Session_Date else 'N/A' }}</td>
+                        <td>{{ session.Duration_Minutes }} minutes</td>
+                        <td>{{ session.Topic or 'N/A' }}</td>
+                        <td>{{ session.Alumni_Name }}</td>
+                        <td>{{ session.Student_Name }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-4">
+            <i class="fas fa-comments fa-3x text-muted mb-3"></i>
+            <p class="text-muted">No mentorship sessions found.</p>
+            <a href="{{ url_for('add_session') }}" class="btn btn-primary">Add First Session</a>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

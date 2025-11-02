@@ -151,13 +151,13 @@ BEFORE INSERT ON MentorshipSession
 FOR EACH ROW
 BEGIN
     -- Prevent scheduling sessions in the past
-    IF NEW.Date < CURDATE() THEN
+    IF NEW.Session_Date < CURDATE() THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Cannot schedule sessions in the past';
     END IF;
 
     -- Prevent scheduling too far in future (max 3 months)
-    IF NEW.Date > DATE_ADD(CURDATE(), INTERVAL 3 MONTH) THEN
+    IF NEW.Session_Date > DATE_ADD(CURDATE(), INTERVAL 3 MONTH) THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Cannot schedule sessions more than 3 months in advance';
     END IF;
@@ -173,7 +173,7 @@ BEGIN
     -- Count sessions already scheduled for this alumni on the same date
     SELECT COUNT(*) INTO v_today_sessions
     FROM MentorshipSession
-    WHERE Alumni_ID = NEW.Alumni_ID AND Date = NEW.Date;
+    WHERE Alumni_ID = NEW.Alumni_ID AND Session_Date = NEW.Session_Date;
 
     -- Limit to 3 sessions per day per alumni
     IF v_today_sessions >= 3 THEN
@@ -246,8 +246,8 @@ AFTER INSERT ON MentorshipSession
 FOR EACH ROW
 BEGIN
     INSERT INTO Activity_Log (Activity_Type, Alumni_ID, Student_ID, Activity_Date, Details)
-    VALUES ('Session Scheduled', NEW.Alumni_ID, NEW.Student_ID, NEW.Date,
-            CONCAT('Mode: ', NEW.Mode, ', Duration: ', NEW.Duration));
+    VALUES ('Session Scheduled', NEW.Alumni_ID, NEW.Student_ID, NEW.Session_Date,
+            CONCAT('Topic: ', NEW.Topic, ', Duration: ', NEW.Duration_Minutes, ' mins'));
 END$$
 
 DELIMITER ;

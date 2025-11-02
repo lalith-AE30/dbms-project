@@ -70,8 +70,8 @@ SELECT 'Before Session:' AS '';
 SELECT COUNT(*) AS Session_Count FROM MentorshipSession;
 SELECT COUNT(*) AS Provides_Count FROM Provides;
 
--- Create mentorship session
-INSERT INTO MentorshipSession VALUES ('TEST002', 'TEST001', CURDATE(), 'Online', '1 hour');
+-- Create mentorship session (Updated to match actual database structure)
+INSERT INTO MentorshipSession VALUES ('TESTSES001', 'TEST002', 'TEST001', CURDATE(), 60, 'Test Session');
 
 SELECT '✓ Session created successfully!' AS '';
 SELECT 'After Session:' AS '';
@@ -94,8 +94,8 @@ SELECT 'Before Feedback:' AS '';
 SELECT COUNT(*) AS Feedback_Count FROM Feedback;
 SELECT COUNT(*) AS Log_Count FROM Feedback_Log;
 
--- Submit feedback with current date
-INSERT INTO Feedback VALUES ('TEST002', 'TEST001', CURDATE(), 'Excellent mentorship session!', 5);
+-- Submit feedback with current date (Updated to match actual database structure)
+INSERT INTO Feedback VALUES ('TESTFDB001', 'TEST002', 'TEST001', 5, CURDATE(), 'Excellent mentorship session!');
 
 SELECT '✓ Feedback submitted successfully!' AS '';
 SELECT 'After Feedback:' AS '';
@@ -140,16 +140,16 @@ SELECT '========================================' AS '';
 
 -- Add multiple sessions and feedback
 SELECT 'Adding 4 more sessions...' AS '';
-INSERT INTO MentorshipSession VALUES ('TEST002', 'TEST001', '2025-01-01', 'Online', '1 hour');
-INSERT INTO MentorshipSession VALUES ('TEST002', 'TEST001', '2024-12-01', 'Offline', '2 hours');
-INSERT INTO MentorshipSession VALUES ('TEST002', 'TEST001', '2024-11-01', 'Online', '45 mins');
-INSERT INTO MentorshipSession VALUES ('TEST002', 'TEST001', '2024-10-01', 'Online', '1 hour');
+INSERT INTO MentorshipSession VALUES ('TESTSES002', 'TEST002', 'TEST001', '2025-01-01', 60, 'Advanced Topics');
+INSERT INTO MentorshipSession VALUES ('TESTSES003', 'TEST002', 'TEST001', '2024-12-01', 120, 'Deep Dive');
+INSERT INTO MentorshipSession VALUES ('TESTSES004', 'TEST002', 'TEST001', '2024-11-01', 45, 'Quick Review');
+INSERT INTO MentorshipSession VALUES ('TESTSES005', 'TEST002', 'TEST001', '2024-10-01', 60, 'Foundation');
 
 SELECT 'Adding high ratings...' AS '';
-INSERT INTO Feedback VALUES ('TEST002', 'TEST001', '2025-01-01', 'Great!', 5);
-INSERT INTO Feedback VALUES ('TEST002', 'TEST001', '2024-12-01', 'Excellent!', 5);
-INSERT INTO Feedback VALUES ('TEST002', 'TEST001', '2024-11-01', 'Perfect!', 5);
-INSERT INTO Feedback VALUES ('TEST002', 'TEST001', '2024-10-01', 'Outstanding!', 5);
+INSERT INTO Feedback VALUES ('TESTFDB002', 'TEST002', 'TEST001', 5, '2025-01-01', 'Great!');
+INSERT INTO Feedback VALUES ('TESTFDB003', 'TEST002', 'TEST001', 5, '2024-12-01', 'Excellent!');
+INSERT INTO Feedback VALUES ('TESTFDB004', 'TEST002', 'TEST001', 5, '2024-11-01', 'Perfect!');
+INSERT INTO Feedback VALUES ('TESTFDB005', 'TEST002', 'TEST001', 5, '2024-10-01', 'Outstanding!');
 
 -- Check total sessions and average rating
 SELECT 'Total Sessions: ' || COUNT(*) AS Total FROM MentorshipSession WHERE Alumni_ID='TEST002';

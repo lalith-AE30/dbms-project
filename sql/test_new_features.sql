@@ -123,7 +123,7 @@ SELECT 'TEST 8: Testing New Triggers' AS '';
 SELECT '========================================' AS '';
 
 -- Test session scheduling with validation
-CALL sp_schedule_session('PESALU001', 'PESSTU001', DATE_ADD(CURDATE(), INTERVAL 7 DAY), 'Online', '1 hour');
+CALL sp_schedule_session('SES_NEW', 'PESALU001', 'PESSTU001', DATE_ADD(CURDATE(), INTERVAL 7 DAY), 60, 'Follow-up Session');
 
 -- Test skill match logging
 SELECT 'Checking Skill Match Log:' AS Status;

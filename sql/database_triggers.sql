@@ -212,7 +212,7 @@ DELIMITER ;
 
 DELIMITER $$
 
--- Trigger: Validate mentorship session before insert
+-- Trigger: Validate mentorship session before insert (Updated to match actual database structure)
 CREATE TRIGGER tr_mentorship_session_before_insert
 BEFORE INSERT ON MentorshipSession
 FOR EACH ROW
@@ -232,6 +232,12 @@ BEGIN
     IF student_exists = 0 THEN
         SIGNAL SQLSTATE '45000'
         SET MESSAGE_TEXT = 'Student does not exist';
+    END IF;
+
+    -- Validate duration is positive
+    IF NEW.Duration_Minutes IS NOT NULL AND NEW.Duration_Minutes <= 0 THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Duration must be positive';
     END IF;
 END$$
 
