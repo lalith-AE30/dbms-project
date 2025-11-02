@@ -1,0 +1,118 @@
+{% extends "base.html" %}
+
+{% block title %}Home - Alumni Mentor Portal{% endblock %}
+
+{% block content %}
+<div class="text-center mb-5">
+    <h1 class="display-4 text-primary mb-3">
+        <i class="fas fa-graduation-cap"></i> Alumni Mentor Portal
+    </h1>
+    <p class="lead">Database Testing Interface</p>
+    <p class="text-muted">Test the functionality of your MySQL database with this comprehensive Flask application</p>
+</div>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-tachometer-alt fa-3x text-primary mb-3"></i>
+                <h5 class="card-title">Dashboard</h5>
+                <p class="card-text">View database statistics and recent activity</p>
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary">
+                    <i class="fas fa-arrow-right"></i> View Dashboard
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-database fa-3x text-success mb-3"></i>
+                <h5 class="card-title">Data Management</h5>
+                <p class="card-text">Add and view alumni, students, sessions, and feedback</p>
+                <a href="{{ url_for('list_alumni') }}" class="btn btn-success">
+                    <i class="fas fa-arrow-right"></i> Manage Data
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 text-center">
+            <div class="card-body">
+                <i class="fas fa-bolt fa-3x text-warning mb-3"></i>
+                <h5 class="card-title">Database Testing</h5>
+                <p class="card-text">Test triggers, stored procedures, and database constraints</p>
+                <a href="{{ url_for('test_triggers') }}" class="btn btn-warning">
+                    <i class="fas fa-arrow-right"></i> Test Database
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Database Features</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> 12 Database Tables</li>
+                    <li><i class="fas fa-check text-success"></i> 10 Active Triggers</li>
+                    <li><i class="fas fa-check text-success"></i> Stored Procedures</li>
+                    <li><i class="fas fa-check text-success"></i> Database Functions</li>
+                    <li><i class="fas fa-check text-success"></i> Data Validation</li>
+                    <li><i class="fas fa-check text-success"></i> Auto-logging</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-shield-alt"></i> Security & Validation</h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-shield-alt text-primary"></i> Email Uniqueness Validation</li>
+                    <li><i class="fas fa-shield-alt text-primary"></i> Phone Number Format Check</li>
+                    <li><i class="fas fa-shield-alt text-primary"></i> Rating Constraints (1-5)</li>
+                    <li><i class="fas fa-shield-alt text-primary"></i> Year of Study Validation</li>
+                    <li><i class="fas fa-shield-alt text-primary"></i> Auto-calculation of Experience</li>
+                    <li><i class="fas fa-shield-alt text-primary"></i> Premium Mentor Status Tracking</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-play"></i> Quick Start Guide</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <h6>1. View Database Status</h6>
+                <p>Check the dashboard to see current statistics and recent activity in your database.</p>
+            </div>
+            <div class="col-md-6">
+                <h6>2. Add Sample Data</h6>
+                <p>Use the data management pages to add new alumni, students, sessions, and feedback records.</p>
+            </div>
+            <div class="col-md-6">
+                <h6>3. Test Triggers</h6>
+                <p>Go to the Test Triggers page to verify that database constraints and validations are working.</p>
+            </div>
+            <div class="col-md-6">
+                <h6>4. Execute Procedures</h6>
+                <p>Test stored procedures to verify complex database operations and business logic.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

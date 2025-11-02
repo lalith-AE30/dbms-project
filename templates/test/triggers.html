@@ -1,0 +1,154 @@
+{% extends "base.html" %}
+
+{% block title %}Test Triggers - Alumni Mentor Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-bolt"></i> Test Database Triggers</h1>
+    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to Dashboard
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-shield-alt"></i> Trigger Testing Interface</h5>
+            </div>
+            <div class="card-body">
+                <div class="accordion" id="triggerAccordion">
+
+                    <!-- Email Uniqueness Test -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingEmail">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseEmail">
+                                <i class="fas fa-envelope text-primary me-2"></i>
+                                Email Uniqueness Trigger
+                            </button>
+                        </h2>
+                        <div id="collapseEmail" class="accordion-collapse collapse show" data-bs-parent="#triggerAccordion">
+                            <div class="accordion-body">
+                                <h6>What it tests:</h6>
+                                <p>Validates that no two users (students or alumni) can have the same email address.</p>
+
+                                <h6>Test Description:</h6>
+                                <p>Attempts to insert a student with a duplicate email address. The trigger should block this insertion.</p>
+
+                                <form method="POST" action="{{ url_for('test_email_uniqueness') }}">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-play"></i> Test Email Uniqueness
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Rating Validation Test -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingRating">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseRating">
+                                <i class="fas fa-star text-warning me-2"></i>
+                                Rating Validation Trigger
+                            </button>
+                        </h2>
+                        <div id="collapseRating" class="accordion-collapse collapse" data-bs-parent="#triggerAccordion">
+                            <div class="accordion-body">
+                                <h6>What it tests:</h6>
+                                <p>Ensures that feedback ratings are constrained between 1 and 5.</p>
+
+                                <h6>Test Description:</h6>
+                                <p>Attempts to insert feedback with an invalid rating (6). The trigger should block this insertion.</p>
+
+                                <form method="POST" action="{{ url_for('test_rating_validation') }}">
+                                    <button type="submit" class="btn btn-warning">
+                                        <i class="fas fa-play"></i> Test Rating Validation
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Auto Logging Test -->
+                    <div class="accordion-item">
+                        <h2 class="accordion-header" id="headingAutoLog">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAutoLog">
+                                <i class="fas fa-clipboard-list text-success me-2"></i>
+                                Automatic Feedback Logging Trigger
+                            </button>
+                        </h2>
+                        <div id="collapseAutoLog" class="accordion-collapse collapse" data-bs-parent="#triggerAccordion">
+                            <div class="accordion-body">
+                                <h6>What it tests:</h6>
+                                <p>Verifies that feedback entries are automatically logged in the Feedback_Log table.</p>
+
+                                <h6>Test Description:</h6>
+                                <p>Inserts valid feedback and checks if it was automatically recorded in the Feedback_Log table.</p>
+
+                                <form method="POST" action="{{ url_for('test_auto_logging') }}">
+                                    <button type="submit" class="btn btn-success">
+                                        <i class="fas fa-play"></i> Test Auto-Logging
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle"></i> About Database Triggers</h6>
+            </div>
+            <div class="card-body">
+                <p>Database triggers are automated procedures that run when specific events occur in the database.</p>
+
+                <h6>Active Triggers in This Database:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> <strong>tr_alumni_before_insert</strong> - Validates alumni data</li>
+                    <li><i class="fas fa-check text-success"></i> <strong>tr_student_before_insert</strong> - Validates student data</li>
+                    <li><i class="fas fa-check text-success"></i> <strong>tr_feedback_before_insert</strong> - Validates feedback</li>
+                    <li><i class="fas fa-check text-success"></i> <strong>tr_feedback_after_insert</strong> - Auto-logs feedback</li>
+                    <li><i class="fas fa-check text-success"></i> <strong>tr_mentorship_session_after_insert</strong> - Creates mentor relationships</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6><i class="fas fa-question-circle"></i> Test Results Guide</h6>
+            </div>
+            <div class="card-body">
+                <div class="test-result test-success">
+                    <i class="fas fa-check-circle"></i> <strong>Success:</strong> Trigger working correctly
+                </div>
+                <div class="test-result test-error">
+                    <i class="fas fa-times-circle"></i> <strong>Error:</strong> Trigger failed or not working
+                </div>
+                <div class="test-result test-warning">
+                    <i class="fas fa-exclamation-triangle"></i> <strong>Warning:</strong> Unexpected behavior occurred
+                </div>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6><i class="fas fa-lightbulb"></i> Understanding Results</h6>
+            </div>
+            <div class="card-body">
+                <p><strong>Expected Behavior:</strong></p>
+                <ul>
+                    <li>Invalid data should be <strong>rejected</strong></li>
+                    <li>Valid data should be <strong>accepted</strong></li>
+                    <li>Automated actions should <strong>execute</strong></li>
+                    <li>Error messages should be <strong>clear</strong></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

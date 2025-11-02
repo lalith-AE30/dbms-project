@@ -1,0 +1,134 @@
+{% extends "base.html" %}
+
+{% block title %}Add Alumni - Alumni Mentor Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-user-tie"></i> Add New Alumni</h1>
+    <a href="{{ url_for('list_alumni') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-plus"></i> Alumni Information</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="alumni_id" class="form-label">Alumni ID *</label>
+                                <input type="text" class="form-control" id="alumni_id" name="alumni_id" required>
+                                <div class="form-text">Unique identifier (e.g., ALUM001)</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="phone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}">
+                                <div class="form-text">10 digits only</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="graduation_year" class="form-label">Graduation Year *</label>
+                                <input type="number" class="form-control" id="graduation_year" name="graduation_year"
+                                       min="1950" max="{{ current_year or 2025 }}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="experience" class="form-label">Years of Experience</label>
+                                <input type="number" class="form-control" id="experience" name="experience" min="0">
+                                <div class="form-text">Leave blank to auto-calculate</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="designation" class="form-label">Current Designation</label>
+                                <input type="text" class="form-control" id="designation" name="designation">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="company" class="form-label">Company</label>
+                                <input type="text" class="form-control" id="company" name="company">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="location" name="location">
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('list_alumni') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-save"></i> Add Alumni
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle"></i> Trigger Actions</h6>
+            </div>
+            <div class="card-body">
+                <h6>Automatic validations:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-check text-success"></i> Email uniqueness check</li>
+                    <li><i class="fas fa-check text-success"></i> Graduation year validation</li>
+                </ul>
+                <h6>Automatic calculations:</h6>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-calculator text-primary"></i> Years of experience (if blank)</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="card mt-3">
+            <div class="card-header">
+                <h6><i class="fas fa-lightbulb"></i> Tips</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled">
+                    <li>• Alumni ID should be unique</li>
+                    <li>• Email addresses are validated for uniqueness</li>
+                    <li>• Graduation year cannot be in the future</li>
+                    <li>• Phone numbers must be 10 digits</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

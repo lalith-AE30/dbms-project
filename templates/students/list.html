@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block title %}Student List - Alumni Mentor Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-user-graduate"></i> Students</h1>
+    <a href="{{ url_for('add_student') }}" class="btn btn-success">
+        <i class="fas fa-plus"></i> Add New Student
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-list"></i> All Students</h5>
+    </div>
+    <div class="card-body">
+        {% if students %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Department</th>
+                            <th>Year of Study</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.Student_ID }}</td>
+                            <td>{{ student.Name }}</td>
+                            <td>{{ student.Email }}</td>
+                            <td>{{ student.Department }}</td>
+                            <td>{{ student.Year_of_Study }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-user-graduate fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No students found</h5>
+                <p class="text-muted">Start by adding your first student</p>
+                <a href="{{ url_for('add_student') }}" class="btn btn-success">
+                    <i class="fas fa-plus"></i> Add Student
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
