@@ -21,8 +21,8 @@ app.secret_key = 'your-secret-key-here'
 # Database configuration
 DB_CONFIG = {
     'host': 'localhost',
-    'user': 'lalith',
-    'password': 'claude123',
+    'user': 'root',
+    'password': 'akr123#',
     'database': 'mentor_alumni_portal',
     'autocommit': True
 }
@@ -361,20 +361,26 @@ def test_auto_logging():
     return redirect(url_for('test_triggers'))
 
 # Procedure Testing Routes
+
 @app.route('/test/procedures')
 def test_procedures():
     """Test stored procedures"""
     return render_template('test/procedures.html')
 
-@app.route('/api/procedures/<procedure_name>')
+@app.route('/api/procedures/<procedure_name>', methods=['POST'])
 def api_test_procedure(procedure_name):
-    """API endpoint to test stored procedures"""
     try:
-        result = execute_procedure(procedure_name)
-        if result is not None:
-            return jsonify({'success': True, 'data': result})
-        else:
-            return jsonify({'success': False, 'error': 'Procedure execution failed'})
+        if procedure_name == "RegisterStudent":
+            params = ('STU999', 'Test User', 9876543210, 'test@pes.edu', 'CSE', 2)
+        elif procedure_name == "ScheduleSession":
+            params = ('SES100', 'PESALU001', 'STU999', '2025-11-05', 60, 'Career Guidance')
+        elif procedure_name == "SubmitFeedback":
+            params = ('FDB100', 'PESALU001', 'STU999', 5, '2025-11-05', 'Great session')
+
+        result = execute_procedure(procedure_name, params)
+
+        return jsonify({'success': True, 'data': result})
+
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)})
 

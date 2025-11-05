@@ -93,12 +93,12 @@ CREATE TABLE Feedback (
 
 -- Insert Alumni Data
 INSERT INTO Alumni VALUES
-('PESALU001', 'Ravi Kumar', 9876543210, 'ravi@alumni.com', 2015, 'Software Engineer', 8),
-('PESALU002', 'Sneha R', 9876500000, 'sneha@alumni.com', 2018, 'Data Scientist', 5),
-('PESALU003', 'Arun Raj', 9988776655, 'arun@alumni.com', 2016, 'Product Manager', 7),
-('PESALU004', 'Divya Sharma', 9123456780, 'divya@alumni.com', 2019, 'UX Designer', 4),
-('PESALU005', 'Kiran M', 9871234567, 'kiran@alumni.com', 2014, 'DevOps Engineer', 10),
-('PESALU006', 'Fatima Noor', 9090909090, 'fatima@alumni.com', 2020, 'Data Analyst', 3);
+('PESALU001', 'Ravi Kumar', 9876543210, 'ravi@alumni.com', 2015, 'Software Engineer','TechCorp', 'Bangalore', 8),
+('PESALU002', 'Sneha R', 9876500000, 'sneha@alumni.com', 2018, 'Data Scientist', 'DataWorks', 'Hyderabad',5),
+('PESALU003', 'Arun Raj', 9988776655, 'arun@alumni.com', 2016, 'Product Manager','Prodify', 'Chennai', 7),
+('PESALU004', 'Divya Sharma', 9123456780, 'divya@alumni.com', 2019, 'UX Designer','CreativeLab', 'Pune', 4),
+('PESALU005', 'Kiran M', 9871234567, 'kiran@alumni.com', 2014, 'DevOps Engineer','CloudX', 'Delhi', 10),
+('PESALU006', 'Fatima Noor', 9090909090, 'fatima@alumni.com', 2020, 'Data Analyst','InsightAI', 'Mumbai', 3);
 
 -- Insert Student Data
 INSERT INTO Student VALUES

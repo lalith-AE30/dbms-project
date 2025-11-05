@@ -18,31 +18,36 @@
             </div>
             <div class="card-body">
                 <div class="mb-4">
-                    <h6>Available Procedures:</h6>
+                    <h6>Available Procedures (Only 3):</h6>
                     <div class="list-group">
-                        <button type="button" class="list-group-item list-group-item-action procedure-test" data-procedure="GetAlumniStats">
+
+                        <!-- RegisterStudent -->
+                        <button type="button" class="list-group-item list-group-item-action procedure-test" data-procedure="RegisterStudent">
                             <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">GetAlumniStats</h6>
-                                <small>Statistics</small>
+                                <h6 class="mb-1">RegisterStudent</h6>
+                                <small>Student Registration</small>
                             </div>
-                            <p class="mb-1">Returns statistics about alumni including total count, average experience, etc.</p>
+                            <p class="mb-1">Registers a new student into the portal using 6 parameters.</p>
                         </button>
 
-                        <button type="button" class="list-group-item list-group-item-action procedure-test" data-procedure="GetTopMentors">
+                        <!-- ScheduleSession -->
+                        <button type="button" class="list-group-item list-group-item-action procedure-test" data-procedure="ScheduleSession">
                             <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">GetTopMentors</h6>
-                                <small>Analytics</small>
+                                <h6 class="mb-1">ScheduleSession</h6>
+                                <small>Mentorship</small>
                             </div>
-                            <p class="mb-1">Returns the top mentors based on feedback ratings and session count.</p>
+                            <p class="mb-1">Schedules a mentorship session between alumni and student (6 parameters).</p>
                         </button>
 
-                        <button type="button" class="list-group-item list-group-item-action procedure-test" data-procedure="GetMentorshipSummary">
+                        <!-- SubmitFeedback -->
+                        <button type="button" class="list-group-item list-group-item-action procedure-test" data-procedure="SubmitFeedback">
                             <div class="d-flex w-100 justify-content-between">
-                                <h6 class="mb-1">GetMentorshipSummary</h6>
-                                <small>Reports</small>
+                                <h6 class="mb-1">SubmitFeedback</h6>
+                                <small>Feedback</small>
                             </div>
-                            <p class="mb-1">Provides a comprehensive summary of mentorship activities and statistics.</p>
+                            <p class="mb-1">Adds feedback for a session (6 parameters).</p>
                         </button>
+
                     </div>
                 </div>
 
@@ -72,58 +77,18 @@
         </div>
     </div>
 
+    <!-- Right Side Info Panel -->
     <div class="col-md-4">
         <div class="card">
             <div class="card-header">
                 <h6><i class="fas fa-info-circle"></i> About Stored Procedures</h6>
             </div>
             <div class="card-body">
-                <p>Stored procedures are pre-compiled SQL statements that can be executed to perform complex database operations.</p>
-
-                <h6>Benefits:</h6>
+                <p>Only these 3 procedures are enabled for testing through UI.</p>
                 <ul>
-                    <li>Improved performance</li>
-                    <li>Reduced network traffic</li>
-                    <li>Better security</li>
-                    <li>Code reusability</li>
-                    <li>Consistent implementation</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="card mt-3">
-            <div class="card-header">
-                <h6><i class="fas fa-database"></i> Database Schema Info</h6>
-            </div>
-            <div class="card-body">
-                <h6>Tables:</h6>
-                <ul class="list-unstyled small">
-                    <li>• Alumni</li>
-                    <li>• Student</li>
-                    <li>• MentorshipSession</li>
-                    <li>• Feedback</li>
-                    <li>• Provides</li>
-                    <li>• Achievement</li>
-                    <li>• Industry</li>
-                    <li>• Skill</li>
-                    <li>• Alumni_Skills</li>
-                    <li>• Student_Skills</li>
-                    <li>• Feedback_Log</li>
-                    <li>• Mentorship_Request</li>
-                </ul>
-            </div>
-        </div>
-
-        <div class="card mt-3">
-            <div class="card-header">
-                <h6><i class="fas fa-lightbulb"></i> Testing Tips</h6>
-            </div>
-            <div class="card-body">
-                <ul>
-                    <li>Click on any procedure to execute it</li>
-                    <li>Results will appear in the results panel</li>
-                    <li>Procedures may take a few seconds to execute</li>
-                    <li>Check the database has sample data before testing</li>
+                    <li><b>RegisterStudent</b> – Adds new student.</li>
+                    <li><b>ScheduleSession</b> – Creates a new mentorship session.</li>
+                    <li><b>SubmitFeedback</b> – Allows giving feedback for a session.</li>
                 </ul>
             </div>
         </div>
@@ -140,26 +105,27 @@ $(document).ready(function() {
     });
 
     function executeProcedure(procedureName) {
-        // Show loading indicator
         $('#loadingIndicator').removeClass('d-none');
         $('#procedureResults').addClass('d-none');
 
-        // Make API call
-        fetch(`/api/procedures/${procedureName}`)
-            .then(response => response.json())
-            .then(data => {
-                $('#loadingIndicator').addClass('d-none');
-
-                if (data.success) {
-                    displayResults(procedureName, data.data, true);
-                } else {
-                    displayResults(procedureName, data.error, false);
-                }
-            })
-            .catch(error => {
-                $('#loadingIndicator').addClass('d-none');
-                displayResults(procedureName, 'Network error: ' + error.message, false);
-            });
+        fetch(`/api/procedures/${procedureName}`, {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ "params": [] })  // You can change to allow user input
+        })
+        .then(response => response.json())
+        .then(data => {
+            $('#loadingIndicator').addClass('d-none');
+            if (data.success) {
+                displayResults(procedureName, data.data, true);
+            } else {
+                displayResults(procedureName, data.error, false);
+            }
+        })
+        .catch(error => {
+            $('#loadingIndicator').addClass('d-none');
+            displayResults(procedureName, 'Network error: ' + error.message, false);
+        });
     }
 
     function displayResults(procedureName, result, success) {
@@ -171,35 +137,9 @@ $(document).ready(function() {
 
         if (success) {
             statusBadge.addClass('bg-success').text('Success');
-
-            if (Array.isArray(result) && result.length > 0) {
-                // Create table from results
-                const keys = Object.keys(result[0]);
-                let tableHtml = '<table class="table table-striped"><thead><tr>';
-
-                keys.forEach(key => {
-                    tableHtml += `<th>${key}</th>`;
-                });
-                tableHtml += '</tr></thead><tbody>';
-
-                result.forEach(row => {
-                    tableHtml += '<tr>';
-                    keys.forEach(key => {
-                        tableHtml += `<td>${row[key] || ''}</td>`;
-                    });
-                    tableHtml += '</tr>';
-                });
-                tableHtml += '</tbody></table>';
-
-                $('#procedureTable').html(tableHtml);
-                $('#procedureOutput').html(`<p class="text-success">Procedure executed successfully. Returned ${result.length} rows.</p>`);
-            } else {
-                $('#procedureTable').html('');
-                $('#procedureOutput').html('<p class="text-success">Procedure executed successfully. No results returned.</p>');
-            }
+            $('#procedureOutput').html(`<p class="text-success">Procedure executed successfully. ${result}</p>`);
         } else {
             statusBadge.addClass('bg-danger').text('Error');
-            $('#procedureTable').html('');
             $('#procedureOutput').html(`<p class="text-danger">Error: ${result}</p>`);
         }
     }
