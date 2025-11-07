@@ -22,7 +22,7 @@ app.secret_key = 'your-secret-key-here'
 DB_CONFIG = {
     'host': 'localhost',
     'user': 'root',
-    'password': 'akr123#',
+    'password': 'root',
     'database': 'mentor_alumni_portal',
     'autocommit': True
 }
@@ -245,15 +245,34 @@ def add_session():
 @app.route('/feedback')
 def list_feedback():
     """List all feedback"""
-    feedback = execute_query("""
-        SELECT f.Feedback_ID, f.Rating, f.Date, f.Comments,
-               a.Name as Alumni_Name, s.Name as Student_Name
-        FROM Feedback f
-        JOIN Alumni a ON f.Alumni_ID = a.Alumni_ID
-        JOIN Student s ON f.Student_ID = s.Student_ID
-        ORDER BY f.Date DESC
-    """)
-    return render_template('feedback/list.html', feedback=feedback)
+    # Get alumni filter parameter
+    alumni_filter = request.args.get('alumni_id', '')
+    
+    # Get all alumni for dropdown
+    alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name")
+    
+    # Build query based on filter
+    if alumni_filter:
+        feedback = execute_query("""
+            SELECT f.Feedback_ID, f.Rating, f.Date, f.Comments,
+                   a.Name as Alumni_Name, s.Name as Student_Name
+            FROM Feedback f
+            JOIN Alumni a ON f.Alumni_ID = a.Alumni_ID
+            JOIN Student s ON f.Student_ID = s.Student_ID
+            WHERE f.Alumni_ID = %s
+            ORDER BY f.Date DESC
+        """, (alumni_filter,))
+    else:
+        feedback = execute_query("""
+            SELECT f.Feedback_ID, f.Rating, f.Date, f.Comments,
+                   a.Name as Alumni_Name, s.Name as Student_Name
+            FROM Feedback f
+            JOIN Alumni a ON f.Alumni_ID = a.Alumni_ID
+            JOIN Student s ON f.Student_ID = s.Student_ID
+            ORDER BY f.Date DESC
+        """)
+    
+    return render_template('feedback/list.html', feedback=feedback, alumni=alumni, selected_alumni=alumni_filter)
 
 @app.route('/feedback/add', methods=['GET', 'POST'])
 def add_feedback():
@@ -286,6 +305,30 @@ def add_feedback():
     alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name")
     students = execute_query("SELECT Student_ID, Name FROM Student ORDER BY Name")
     return render_template('feedback/add.html', alumni=alumni, students=students)
+
+# Connections Route
+@app.route('/connections')
+def alumni_student_connections():
+    """Show alumni-student mentorship connections"""
+    query = """
+        SELECT 
+            a.Name as Alumni_Name,
+            a.Company,
+            a.Current_Designation,
+            s.Name as Student_Name,
+            s.Department,
+            s.Year_of_Study,
+            COUNT(ms.Session_ID) as Total_Sessions,
+            MAX(ms.Session_Date) as Last_Session
+        FROM Alumni a
+        INNER JOIN MentorshipSession ms ON a.Alumni_ID = ms.Alumni_ID
+        INNER JOIN Student s ON ms.Student_ID = s.Student_ID
+        GROUP BY a.Alumni_ID, a.Name, a.Company, a.Current_Designation,
+                 s.Student_ID, s.Name, s.Department, s.Year_of_Study
+        ORDER BY Total_Sessions DESC, Last_Session DESC
+    """
+    connections = execute_query(query)
+    return render_template('connections.html', connections=connections)
 
 # Trigger Testing Routes
 @app.route('/test/triggers')

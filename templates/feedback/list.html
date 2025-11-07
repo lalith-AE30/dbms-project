@@ -10,6 +10,41 @@
     </a>
 </div>
 
+<!-- Filter Section -->
+<div class="card mb-3">
+    <div class="card-body">
+        <form method="GET" action="{{ url_for('list_feedback') }}">
+            <div class="row align-items-end">
+                <div class="col-md-4">
+                    <label for="alumni_filter" class="form-label">
+                        <i class="fas fa-filter"></i> Filter by Alumni
+                    </label>
+                    <select class="form-select" id="alumni_filter" name="alumni_id">
+                        <option value="">All Alumni</option>
+                        {% if alumni %}
+                            {% for alum in alumni %}
+                            <option value="{{ alum.Alumni_ID }}" {% if selected_alumni == alum.Alumni_ID %}selected{% endif %}>
+                                {{ alum.Name }}
+                            </option>
+                            {% endfor %}
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Apply Filter
+                    </button>
+                    {% if selected_alumni %}
+                    <a href="{{ url_for('list_feedback') }}" class="btn btn-secondary">
+                        <i class="fas fa-times"></i> Clear Filter
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
 <div class="card">
     <div class="card-body">
         {% if feedback %}

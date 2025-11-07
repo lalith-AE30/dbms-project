@@ -3,6 +3,7 @@
 -- =====================================================
 
 -- Create Database
+DROP DATABASE IF EXISTS mentor_alumni_portal;
 CREATE DATABASE IF NOT EXISTS mentor_alumni_portal;
 USE mentor_alumni_portal;
 
