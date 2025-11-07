@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="container mt-4">
+    <h2>Edit Achievement</h2>
+    <form method="POST">
+        <div class="row g-3">
+            <div class="col-md-2">
+                <input type="text" name="achievement_id" class="form-control" value="{{ achievement.Achievement_ID }}" readonly>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="alumni_id" class="form-control" value="{{ achievement.Alumni_ID }}" required>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="awarding_body" class="form-control" value="{{ achievement.Awarding_Body }}" required>
+            </div>
+            <div class="col-md-2">
+                <input type="text" name="title" class="form-control" value="{{ achievement.Title }}" required>
+            </div>
+            <div class="col-md-2">
+                <input type="number" name="year" class="form-control" value="{{ achievement.Year }}" required>
+            </div>
+            <div class="col-md-12 mt-2">
+                <textarea name="description" class="form-control" rows="2" required>{{ achievement.Description }}</textarea>
+            </div>
+        </div>
+        <div class="mt-3">
+            <button type="submit" class="btn btn-primary"><i class="fas fa-save"></i> Update Achievement</button>
+            <a href="{{ url_for('alumni_achievements') }}" class="btn btn-secondary">Cancel</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

@@ -6,7 +6,7 @@ This app provides a web interface to test the MySQL database functionality
 
 import os
 import mysql.connector
-from flask import Flask, render_template, request, jsonify, redirect, url_for, flash
+from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session
 from mysql.connector import Error
 from datetime import datetime, date
 import logging
@@ -26,6 +26,56 @@ DB_CONFIG = {
     'database': 'mentor_alumni_portal',
     'autocommit': True
 }
+
+# --------------------
+# Simple session-based authentication
+# Credentials can be provided via environment variables APP_USER and APP_PASSWORD
+# Defaults to 'admin' / 'admin' if not set. For production use a proper auth system.
+# --------------------
+USERS = {
+    os.environ.get('APP_USER', 'admin'): os.environ.get('APP_PASSWORD', 'admin')
+}
+
+
+@app.before_request
+def require_login():
+    """Require login for all routes except the login page and static files."""
+    # request.endpoint may be None for some requests (favicon, etc.)
+    endpoint = request.endpoint or ''
+    allowed_endpoints = ('login', 'static')
+    if endpoint in allowed_endpoints:
+        return
+
+    # If already logged in, continue
+    if session.get('user'):
+        return
+
+    # Otherwise redirect to login page
+    return redirect(url_for('login', next=request.path))
+
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    """Simple login page."""
+    next_url = request.args.get('next') or url_for('index')
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        if username in USERS and USERS[username] == password:
+            session['user'] = username
+            flash('Logged in successfully', 'success')
+            return redirect(request.form.get('next') or next_url)
+        else:
+            flash('Invalid credentials', 'error')
+
+    return render_template('login.html', next=next_url)
+
+
+@app.route('/logout')
+def logout():
+    session.pop('user', None)
+    flash('Logged out', 'success')
+    return redirect(url_for('login'))
 
 def get_db_connection():
     """Get database connection"""
@@ -131,6 +181,72 @@ def list_alumni():
         ORDER BY Name
     """)
     return render_template('alumni/list.html', alumni=alumni)
+
+# Alumni Achievements Route
+@app.route('/alumni/achievements')
+def alumni_achievements():
+    """Display all alumni achievements and handle add form submission"""
+    if request.method == 'POST':
+        data = request.form
+        try:
+            query = '''
+                INSERT INTO Achievement (Achievement_ID, Alumni_ID, Awarding_Body, Title, Description, Year)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            '''
+            params = (
+                data['achievement_id'], data['alumni_id'], data['awarding_body'],
+                data['title'], data['description'], data['year']
+            )
+            execute_query(query, params, fetch=False)
+            flash('Achievement added successfully!', 'success')
+            return redirect(url_for('alumni_achievements'))
+        except Exception as e:
+            flash(f'Error adding achievement: {str(e)}', 'error')
+            # fall through to reload page with error
+    achievements = execute_query("""
+        SELECT Achievement_ID, Alumni_ID, Awarding_Body, Title, Description, Year
+        FROM Achievement
+        ORDER BY Year DESC
+    """)
+    return render_template('alumni/achievements.html', achievements=achievements)
+
+# Delete Achievement Route
+@app.route('/alumni/achievements/delete/<achievement_id>', methods=['POST'])
+def delete_achievement(achievement_id):
+    try:
+        execute_query('DELETE FROM Achievement WHERE Achievement_ID = %s', (achievement_id,), fetch=False)
+        flash('Achievement deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting achievement: {str(e)}', 'error')
+    return redirect(url_for('alumni_achievements'))
+# Edit Achievement Route
+@app.route('/alumni/achievements/edit/<achievement_id>', methods=['GET', 'POST'])
+def edit_achievement(achievement_id):
+    if request.method == 'POST':
+        data = request.form
+        try:
+            query = '''
+                UPDATE Achievement SET Alumni_ID=%s, Awarding_Body=%s, Title=%s, Description=%s, Year=%s
+                WHERE Achievement_ID=%s
+            '''
+            params = (
+                data['alumni_id'], data['awarding_body'], data['title'],
+                data['description'], data['year'], achievement_id
+            )
+            execute_query(query, params, fetch=False)
+            flash('Achievement updated successfully!', 'success')
+            return redirect(url_for('alumni_achievements'))
+        except Exception as e:
+            flash(f'Error updating achievement: {str(e)}', 'error')
+    # GET: fetch achievement
+    achievement = execute_query('SELECT * FROM Achievement WHERE Achievement_ID = %s', (achievement_id,))
+    if not achievement:
+        flash('Achievement not found!', 'error')
+        return redirect(url_for('alumni_achievements'))
+    return render_template('alumni/edit_achievement.html', achievement=achievement[0])
+
+# Add POST method to the route
+app.add_url_rule('/alumni/achievements', view_func=alumni_achievements, methods=['GET', 'POST'])
 
 @app.route('/alumni/add', methods=['GET', 'POST'])
 def add_alumni():
