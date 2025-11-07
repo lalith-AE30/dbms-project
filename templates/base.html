@@ -74,6 +74,14 @@
                     <div class="p-3 text-center text-white">
                         <h4><i class="fas fa-graduation-cap"></i> Alumni Portal</h4>
                     </div>
+                    <div class="px-3">
+                        {% if session.get('user') %}
+                            <p class="text-white">Signed in as <strong>{{ session.get('user') }}</strong></p>
+                            <a class="btn btn-sm btn-light mb-2" href="{{ url_for('logout') }}">Logout</a>
+                        {% else %}
+                            <a class="btn btn-sm btn-light mb-2" href="{{ url_for('login') }}">Login</a>
+                        {% endif %}
+                    </div>
                     <ul class="nav flex-column">
                         <li class="nav-item">
                             <a class="nav-link" href="{{ url_for('index') }}">

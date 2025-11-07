@@ -4,11 +4,10 @@ Alumni Mentor Portal - Flask Testing Application
 This app provides a web interface to test the MySQL database functionality
 """
 
-import os
 import mysql.connector
 from flask import Flask, render_template, request, jsonify, redirect, url_for, flash, session
 from mysql.connector import Error
-from datetime import datetime, date
+from datetime import date
 import logging
 
 # Configure logging
@@ -27,14 +26,22 @@ DB_CONFIG = {
     'autocommit': True
 }
 
-# --------------------
-# Simple session-based authentication
-# Credentials can be provided via environment variables APP_USER and APP_PASSWORD
-# Defaults to 'admin' / 'admin' if not set. For production use a proper auth system.
-# --------------------
-USERS = {
-    os.environ.get('APP_USER', 'admin'): os.environ.get('APP_PASSWORD', 'admin')
-}
+DEFAULT_DB_CONFIG = DB_CONFIG.copy()
+
+
+def verify_db_credentials(username, password):
+    """Attempt to connect with provided credentials to verify access."""
+    test_config = DB_CONFIG.copy()
+    test_config['user'] = username
+    test_config['password'] = password
+    try:
+        connection = mysql.connector.connect(**test_config)
+        if connection.is_connected():
+            connection.close()
+            return True
+    except Error as e:
+        logger.warning(f"Failed login attempt for user {username}: {e}")
+    return False
 
 
 @app.before_request
@@ -42,7 +49,7 @@ def require_login():
     """Require login for all routes except the login page and static files."""
     # request.endpoint may be None for some requests (favicon, etc.)
     endpoint = request.endpoint or ''
-    allowed_endpoints = ('login', 'static')
+    allowed_endpoints = ('login', 'logout', 'static')
     if endpoint in allowed_endpoints:
         return
 
@@ -59,21 +66,31 @@ def login():
     """Simple login page."""
     next_url = request.args.get('next') or url_for('index')
     if request.method == 'POST':
-        username = request.form.get('username')
-        password = request.form.get('password')
-        if username in USERS and USERS[username] == password:
+        username = (request.form.get('username') or '').strip()
+        password = request.form.get('password') or ''
+        target = request.form.get('next') or next_url
+
+        if verify_db_credentials(username, password):
+            DB_CONFIG['user'] = username
+            DB_CONFIG['password'] = password
             session['user'] = username
+            session['db_user'] = username
+            session['db_password'] = password
             flash('Logged in successfully', 'success')
-            return redirect(request.form.get('next') or next_url)
-        else:
-            flash('Invalid credentials', 'error')
+            return redirect(target)
+
+        flash('Invalid credentials or database connection failed', 'error')
 
     return render_template('login.html', next=next_url)
 
 
 @app.route('/logout')
 def logout():
+    DB_CONFIG['user'] = DEFAULT_DB_CONFIG['user']
+    DB_CONFIG['password'] = DEFAULT_DB_CONFIG['password']
     session.pop('user', None)
+    session.pop('db_user', None)
+    session.pop('db_password', None)
     flash('Logged out', 'success')
     return redirect(url_for('login'))
 
@@ -102,12 +119,14 @@ def execute_query(query, params=None, fetch=True):
         if fetch:
             result = cursor.fetchall()
         else:
+            connection.commit()
             result = cursor.rowcount
 
         cursor.close()
         return result
     except Error as e:
         logger.error(f"Error executing query: {e}")
+        connection.rollback()  # ← ADD THIS LINE (rollback on error)
         return None
     finally:
         connection.close()
@@ -122,7 +141,6 @@ def execute_procedure(procedure_name, params=None):
         cursor = connection.cursor(dictionary=True)
 
         if params:
-            placeholders = ','.join(['%s'] * len(params))
             cursor.callproc(procedure_name, params)
         else:
             cursor.callproc(procedure_name)
@@ -316,8 +334,13 @@ def delete_alumni(alumni_id):
     """Delete alumni"""
     try:
         query = "DELETE FROM Alumni WHERE Alumni_ID = %s"
-        execute_query(query, (alumni_id,), fetch=False)
-        flash('Alumni deleted successfully!', 'success')
+        result = execute_query(query, (alumni_id,), fetch=False)
+
+        # Verify the deletion worked
+        if result and result > 0:
+            flash(f'Alumni deleted successfully! ({result} record(s) removed)', 'success')
+        else:
+            flash('Insufficient priveleges.', 'error')
     except Exception as e:
         flash(f'Error deleting alumni: {str(e)}', 'error')
     return redirect(url_for('list_alumni'))
