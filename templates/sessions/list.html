@@ -5,9 +5,16 @@
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
     <h1 class="h2">Mentorship Sessions</h1>
-    <a href="{{ url_for('add_session') }}" class="btn btn-primary">
-        <i class="fas fa-plus"></i> Add Session
-    </a>
+    <div>
+        <a href="{{ url_for('add_session') }}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Add Session
+        </a>
+        <form method="POST" action="{{ url_for('delete_old_sessions') }}" style="display: inline;" onsubmit="return confirm('Delete all sessions older than 7 days? This action cannot be undone.');">
+            <button type="submit" class="btn btn-warning">
+                <i class="fas fa-trash"></i> Delete Old Sessions (>7 days)
+            </button>
+        </form>
+    </div>
 </div>
 
 <div class="card">

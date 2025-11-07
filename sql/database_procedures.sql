@@ -215,6 +215,22 @@ BEGIN
     SELECT 'Mentorship request created successfully' AS Message;
 END$$
 
+-- Procedure 9: Delete Old Sessions
+-- Deletes all mentorship sessions older than one week
+CREATE PROCEDURE DeleteOldSessions()
+BEGIN
+    DECLARE v_deleted_count INT;
+
+    -- Delete sessions that are older than 7 days
+    DELETE FROM MentorshipSession
+    WHERE Session_Date < DATE_SUB(CURDATE(), INTERVAL 7 DAY);
+
+    -- Get count of deleted rows
+    SELECT ROW_COUNT() INTO v_deleted_count;
+
+    SELECT CONCAT(v_deleted_count, ' sessions older than 7 days have been deleted.') AS Message;
+END$$
+
 DELIMITER ;
 
 -- Example Usage:

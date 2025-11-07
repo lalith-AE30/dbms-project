@@ -703,6 +703,20 @@ def delete_session(session_id):
         flash(f'Error deleting session: {str(e)}', 'error')
     return redirect(url_for('list_sessions'))
 
+@app.route('/sessions/delete-old', methods=['POST'])
+def delete_old_sessions():
+    """Delete all mentorship sessions older than 7 days"""
+    try:
+        result = execute_procedure('DeleteOldSessions')
+        if result:
+            message = result[0].get('Message', 'Old sessions deleted successfully')
+            flash(message, 'success')
+        else:
+            flash('No sessions to delete or error occurred', 'info')
+    except Exception as e:
+        flash(f'Error deleting old sessions: {str(e)}', 'error')
+    return redirect(url_for('list_sessions'))
+
 # Feedback Routes
 @app.route('/feedback')
 def list_feedback():
