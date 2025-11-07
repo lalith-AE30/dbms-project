@@ -1,0 +1,106 @@
+{% extends "base.html" %}
+
+{% block title %}{% if edit_mode %}Edit Skill{% else %}Add Skill{% endif %} - Alumni Mentor Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-cogs"></i> {% if edit_mode %}Edit Skill{% else %}Add New Skill{% endif %}</h1>
+    <a href="{{ url_for('list_skills') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-{% if edit_mode %}edit{% else %}plus{% endif %}"></i> {% if edit_mode %}Edit Skill Information{% else %}Skill Information{% endif %}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="skill_id" class="form-label">Skill ID *</label>
+                                <input type="text" class="form-control" id="skill_id" name="skill_id" value="{% if edit_mode %}{{ skill.Skill_ID }}{% endif %}" {% if edit_mode %}readonly{% else %}required{% endif %}>
+                                <div class="form-text">{% if edit_mode %}Skill ID cannot be changed{% else %}Unique identifier (e.g., PESSK001){% endif %}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="skill_name" class="form-label">Skill Name *</label>
+                                <input type="text" class="form-control" id="skill_name" name="skill_name" value="{% if edit_mode %}{{ skill.Skill_Name }}{% endif %}" required>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="proficiency_level" class="form-label">Proficiency Level</label>
+                                <select class="form-select" id="proficiency_level" name="proficiency_level">
+                                    <option value="">-- Select Proficiency Level --</option>
+                                    <option value="Beginner" {% if edit_mode and skill.Proficiency_Level == 'Beginner' %}selected{% endif %}>Beginner</option>
+                                    <option value="Intermediate" {% if edit_mode and skill.Proficiency_Level == 'Intermediate' %}selected{% endif %}>Intermediate</option>
+                                    <option value="Advanced" {% if edit_mode and skill.Proficiency_Level == 'Advanced' %}selected{% endif %}>Advanced</option>
+                                </select>
+                                <div class="form-text">Select the proficiency level for this skill</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="category" class="form-label">Category</label>
+                                <select class="form-select" id="category" name="category">
+                                    <option value="">-- Select Category --</option>
+                                    <option value="Programming" {% if edit_mode and skill.Category == 'Programming' %}selected{% endif %}>Programming</option>
+                                    <option value="AI/ML" {% if edit_mode and skill.Category == 'AI/ML' %}selected{% endif %}>AI/ML</option>
+                                    <option value="Soft Skill" {% if edit_mode and skill.Category == 'Soft Skill' %}selected{% endif %}>Soft Skill</option>
+                                    <option value="Infrastructure" {% if edit_mode and skill.Category == 'Infrastructure' %}selected{% endif %}>Infrastructure</option>
+                                    <option value="Design" {% if edit_mode and skill.Category == 'Design' %}selected{% endif %}>Design</option>
+                                    <option value="Database" {% if edit_mode and skill.Category == 'Database' %}selected{% endif %}>Database</option>
+                                    <option value="Other" {% if edit_mode and skill.Category == 'Other' %}selected{% endif %}>Other</option>
+                                </select>
+                                <div class="form-text">Select the skill category</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> {% if edit_mode %}Update Skill{% else %}Add Skill{% endif %}
+                        </button>
+                        <a href="{{ url_for('list_skills') }}" class="btn btn-secondary">
+                            <i class="fas fa-times"></i> Cancel
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Information</h5>
+            </div>
+            <div class="card-body">
+                <p><strong>Proficiency Levels:</strong></p>
+                <ul>
+                    <li><span class="badge bg-info">Beginner</span> - New to this skill</li>
+                    <li><span class="badge bg-warning">Intermediate</span> - Practical experience</li>
+                    <li><span class="badge bg-success">Advanced</span> - Expert level</li>
+                </ul>
+                <p class="mt-3"><strong>Common Categories:</strong></p>
+                <ul class="small">
+                    <li>Programming - Languages and frameworks</li>
+                    <li>AI/ML - Machine Learning skills</li>
+                    <li>Soft Skill - Communication, leadership, etc.</li>
+                    <li>Infrastructure - Cloud, DevOps, etc.</li>
+                    <li>Design - UI/UX, Graphics, etc.</li>
+                    <li>Database - SQL, NoSQL, etc.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

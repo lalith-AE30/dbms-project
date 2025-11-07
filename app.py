@@ -266,6 +266,186 @@ def edit_achievement(achievement_id):
 # Add POST method to the route
 app.add_url_rule('/alumni/achievements', view_func=alumni_achievements, methods=['GET', 'POST'])
 
+# Industry Routes
+@app.route('/industries')
+def list_industries():
+    """List all industries"""
+    industries = execute_query(
+        """
+        SELECT i.Industry_ID, i.Alumni_ID, i.Sector, i.Location, i.Size, i.Industry_Name,
+               a.Name as Alumni_Name
+        FROM Industry i
+        LEFT JOIN Alumni a ON i.Alumni_ID = a.Alumni_ID
+        ORDER BY i.Industry_Name
+        """
+    ) or []
+    return render_template('industry/list.html', industries=industries)
+
+
+@app.route('/industries/add', methods=['GET', 'POST'])
+def add_industry():
+    """Add new industry"""
+    if request.method == 'POST':
+        try:
+            data = request.form
+            query = """
+                INSERT INTO Industry (Industry_ID, Alumni_ID, Sector, Location, Size, Industry_Name)
+                VALUES (%s, %s, %s, %s, %s, %s)
+            """
+            params = (
+                data['industry_id'],
+                data.get('alumni_id') or None,
+                data.get('sector') or None,
+                data.get('location') or None,
+                data.get('size') or None,
+                data.get('industry_name') or None
+            )
+
+            execute_query(query, params, fetch=False)
+            flash('Industry added successfully!', 'success')
+            return redirect(url_for('list_industries'))
+
+        except Exception as e:
+            flash(f'Error adding industry: {str(e)}', 'error')
+
+    alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name") or []
+    return render_template('industry/add.html', alumni=alumni, edit_mode=False)
+
+
+@app.route('/industries/edit/<industry_id>', methods=['GET', 'POST'])
+def edit_industry(industry_id):
+    """Edit existing industry"""
+    if request.method == 'POST':
+        try:
+            data = request.form
+            query = """
+                UPDATE Industry
+                SET Alumni_ID = %s, Sector = %s, Location = %s, Size = %s, Industry_Name = %s
+                WHERE Industry_ID = %s
+            """
+            params = (
+                data.get('alumni_id') or None,
+                data.get('sector') or None,
+                data.get('location') or None,
+                data.get('size') or None,
+                data.get('industry_name') or None,
+                industry_id
+            )
+
+            execute_query(query, params, fetch=False)
+            flash('Industry updated successfully!', 'success')
+            return redirect(url_for('list_industries'))
+
+        except Exception as e:
+            flash(f'Error updating industry: {str(e)}', 'error')
+
+    industry = execute_query("SELECT * FROM Industry WHERE Industry_ID = %s", (industry_id,))
+    if not industry:
+        flash('Industry not found!', 'error')
+        return redirect(url_for('list_industries'))
+
+    alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name") or []
+    return render_template('industry/add.html', industry=industry[0], alumni=alumni, edit_mode=True)
+
+
+@app.route('/industries/delete/<industry_id>', methods=['POST'])
+def delete_industry(industry_id):
+    """Delete industry"""
+    try:
+        query = "DELETE FROM Industry WHERE Industry_ID = %s"
+        execute_query(query, (industry_id,), fetch=False)
+        flash('Industry deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting industry: {str(e)}', 'error')
+    return redirect(url_for('list_industries'))
+
+
+# Skills Routes
+@app.route('/skills')
+def list_skills():
+    """List all skills"""
+    skills = execute_query(
+        """
+        SELECT Skill_ID, Skill_Name, Proficiency_Level, Category
+        FROM Skill
+        ORDER BY Skill_Name
+        """
+    ) or []
+    return render_template('skills/list.html', skills=skills)
+
+
+@app.route('/skills/add', methods=['GET', 'POST'])
+def add_skill():
+    """Add new skill"""
+    if request.method == 'POST':
+        try:
+            data = request.form
+            query = """
+                INSERT INTO Skill (Skill_ID, Skill_Name, Proficiency_Level, Category)
+                VALUES (%s, %s, %s, %s)
+            """
+            params = (
+                data['skill_id'],
+                data.get('skill_name') or None,
+                data.get('proficiency_level') or None,
+                data.get('category') or None
+            )
+
+            execute_query(query, params, fetch=False)
+            flash('Skill added successfully!', 'success')
+            return redirect(url_for('list_skills'))
+
+        except Exception as e:
+            flash(f'Error adding skill: {str(e)}', 'error')
+
+    return render_template('skills/add.html', edit_mode=False)
+
+
+@app.route('/skills/edit/<skill_id>', methods=['GET', 'POST'])
+def edit_skill(skill_id):
+    """Edit existing skill"""
+    if request.method == 'POST':
+        try:
+            data = request.form
+            query = """
+                UPDATE Skill
+                SET Skill_Name = %s, Proficiency_Level = %s, Category = %s
+                WHERE Skill_ID = %s
+            """
+            params = (
+                data.get('skill_name') or None,
+                data.get('proficiency_level') or None,
+                data.get('category') or None,
+                skill_id
+            )
+
+            execute_query(query, params, fetch=False)
+            flash('Skill updated successfully!', 'success')
+            return redirect(url_for('list_skills'))
+
+        except Exception as e:
+            flash(f'Error updating skill: {str(e)}', 'error')
+
+    skill = execute_query("SELECT * FROM Skill WHERE Skill_ID = %s", (skill_id,))
+    if not skill:
+        flash('Skill not found!', 'error')
+        return redirect(url_for('list_skills'))
+
+    return render_template('skills/add.html', skill=skill[0], edit_mode=True)
+
+
+@app.route('/skills/delete/<skill_id>', methods=['POST'])
+def delete_skill(skill_id):
+    """Delete skill"""
+    try:
+        query = "DELETE FROM Skill WHERE Skill_ID = %s"
+        execute_query(query, (skill_id,), fetch=False)
+        flash('Skill deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting skill: {str(e)}', 'error')
+    return redirect(url_for('list_skills'))
+
+
 @app.route('/alumni/add', methods=['GET', 'POST'])
 def add_alumni():
     """Add new alumni"""

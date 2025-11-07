@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}{% if edit_mode %}Edit Industry{% else %}Add Industry{% endif %} - Alumni Mentor Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-industry"></i> {% if edit_mode %}Edit Industry{% else %}Add Industry{% endif %}</h1>
+    <a href="{{ url_for('list_industries') }}" class="btn btn-secondary">
+        <i class="fas fa-arrow-left"></i> Back to List
+    </a>
+</div>
+
+<div class="row">
+    <div class="col-lg-8">
+        <div class="card">
+            <div class="card-header">
+                <h5><i class="fas fa-{% if edit_mode %}edit{% else %}plus{% endif %}"></i> {% if edit_mode %}Update Industry Details{% else %}Industry Details{% endif %}</h5>
+            </div>
+            <div class="card-body">
+                <form method="POST">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="industry_id" class="form-label">Industry ID *</label>
+                                <input type="text" class="form-control" id="industry_id" name="industry_id" value="{% if edit_mode %}{{ industry.Industry_ID }}{% endif %}" {% if edit_mode %}readonly{% else %}required{% endif %}>
+                                <div class="form-text">{% if edit_mode %}Identifier cannot change{% else %}Unique ID (e.g., PESIND007){% endif %}</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="industry_name" class="form-label">Industry Name</label>
+                                <input type="text" class="form-control" id="industry_name" name="industry_name" value="{% if edit_mode %}{{ industry.Industry_Name }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="sector" class="form-label">Sector</label>
+                                <input type="text" class="form-control" id="sector" name="sector" value="{% if edit_mode %}{{ industry.Sector }}{% endif %}">
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location" name="location" value="{% if edit_mode %}{{ industry.Location }}{% endif %}">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="size" class="form-label">Company Size</label>
+                                <select class="form-select" id="size" name="size">
+                                    <option value="" {% if edit_mode and not industry.Size %}selected{% endif %}>Select size</option>
+                                    <option value="Small" {% if edit_mode and industry.Size == 'Small' %}selected{% endif %}>Small</option>
+                                    <option value="Medium" {% if edit_mode and industry.Size == 'Medium' %}selected{% endif %}>Medium</option>
+                                    <option value="Large" {% if edit_mode and industry.Size == 'Large' %}selected{% endif %}>Large</option>
+                                    <option value="Enterprise" {% if edit_mode and industry.Size == 'Enterprise' %}selected{% endif %}>Enterprise</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="alumni_id" class="form-label">Associated Alumni</label>
+                                <select class="form-select" id="alumni_id" name="alumni_id">
+                                    <option value="">Unassigned</option>
+                                    {% for alum in alumni %}
+                                        <option value="{{ alum.Alumni_ID }}" {% if edit_mode and industry.Alumni_ID == alum.Alumni_ID %}selected{% endif %}>{{ alum.Name }} ({{ alum.Alumni_ID }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{{ url_for('list_industries') }}" class="btn btn-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save"></i> {% if edit_mode %}Update Industry{% else %}Add Industry{% endif %}
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-4">
+        <div class="card">
+            <div class="card-header">
+                <h6><i class="fas fa-info-circle"></i> Notes</h6>
+            </div>
+            <div class="card-body">
+                <ul class="list-unstyled mb-0">
+                    <li>• Alumni linkage helps track company mentors.</li>
+                    <li>• Leave fields blank if data is unavailable.</li>
+                    <li>• Company size provides quick segmentation.</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

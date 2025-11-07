@@ -1,0 +1,72 @@
+{% extends "base.html" %}
+
+{% block title %}Skills - Alumni Mentor Portal{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+    <h1 class="h2"><i class="fas fa-cogs"></i> Skills</h1>
+    <a href="{{ url_for('add_skill') }}" class="btn btn-primary">
+        <i class="fas fa-plus"></i> Add New Skill
+    </a>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <h5><i class="fas fa-list"></i> All Skills</h5>
+    </div>
+    <div class="card-body">
+        {% if skills %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>Skill ID</th>
+                            <th>Skill Name</th>
+                            <th>Proficiency Level</th>
+                            <th>Category</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for skill in skills %}
+                        <tr>
+                            <td>{{ skill.Skill_ID }}</td>
+                            <td>{{ skill.Skill_Name }}</td>
+                            <td>
+                                {% if skill.Proficiency_Level %}
+                                    <span class="badge bg-{% if skill.Proficiency_Level == 'Beginner' %}info{% elif skill.Proficiency_Level == 'Intermediate' %}warning{% elif skill.Proficiency_Level == 'Advanced' %}success{% else %}secondary{% endif %}">
+                                        {{ skill.Proficiency_Level }}
+                                    </span>
+                                {% else %}
+                                    <span class="text-muted">N/A</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ skill.Category or 'N/A' }}</td>
+                            <td>
+                                <a href="{{ url_for('edit_skill', skill_id=skill.Skill_ID) }}" class="btn btn-primary btn-sm me-1">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <form method="POST" action="{{ url_for('delete_skill', skill_id=skill.Skill_ID) }}" style="display: inline;" onsubmit="return confirm('Are you sure you want to delete this skill?');">
+                                    <button type="submit" class="btn btn-danger btn-sm">
+                                        <i class="fas fa-trash"></i> Delete
+                                    </button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-5">
+                <i class="fas fa-cogs fa-3x text-muted mb-3"></i>
+                <h5 class="text-muted">No skills found</h5>
+                <p class="text-muted">Start by adding your first skill</p>
+                <a href="{{ url_for('add_skill') }}" class="btn btn-primary">
+                    <i class="fas fa-plus"></i> Add Skill
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
