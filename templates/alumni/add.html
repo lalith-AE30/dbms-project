@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Add Alumni - Alumni Mentor Portal{% endblock %}
+{% block title %}{% if edit_mode %}Edit Alumni{% else %}Add Alumni{% endif %} - Alumni Mentor Portal{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2"><i class="fas fa-user-tie"></i> Add New Alumni</h1>
+    <h1 class="h2"><i class="fas fa-user-tie"></i> {% if edit_mode %}Edit Alumni{% else %}Add New Alumni{% endif %}</h1>
     <a href="{{ url_for('list_alumni') }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i> Back to List
     </a>
@@ -14,7 +14,7 @@
     <div class="col-md-8">
         <div class="card">
             <div class="card-header">
-                <h5><i class="fas fa-plus"></i> Alumni Information</h5>
+                <h5><i class="fas fa-{% if edit_mode %}edit{% else %}plus{% endif %}"></i> {% if edit_mode %}Edit Alumni Information{% else %}Alumni Information{% endif %}</h5>
             </div>
             <div class="card-body">
                 <form method="POST">
@@ -22,14 +22,14 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="alumni_id" class="form-label">Alumni ID *</label>
-                                <input type="text" class="form-control" id="alumni_id" name="alumni_id" required>
-                                <div class="form-text">Unique identifier (e.g., ALUM001)</div>
+                                <input type="text" class="form-control" id="alumni_id" name="alumni_id" value="{% if edit_mode %}{{ alumni.Alumni_ID }}{% endif %}" {% if edit_mode %}readonly{% else %}required{% endif %}>
+                                <div class="form-text">{% if edit_mode %}Alumni ID cannot be changed{% else %}Unique identifier (e.g., ALUM001){% endif %}</div>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="name" class="form-label">Full Name *</label>
-                                <input type="text" class="form-control" id="name" name="name" required>
+                                <input type="text" class="form-control" id="name" name="name" value="{% if edit_mode %}{{ alumni.Name }}{% endif %}" required>
                             </div>
                         </div>
                     </div>
@@ -38,13 +38,13 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="email" class="form-label">Email Address *</label>
-                                <input type="email" class="form-control" id="email" name="email" required>
+                                <input type="email" class="form-control" id="email" name="email" value="{% if edit_mode %}{{ alumni.Email }}{% endif %}" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="phone" class="form-label">Phone Number</label>
-                                <input type="tel" class="form-control" id="phone" name="phone" pattern="[0-9]{10}">
+                                <input type="tel" class="form-control" id="phone" name="phone" value="{% if edit_mode %}{{ alumni.Phone_Number }}{% endif %}" pattern="[0-9]{10}">
                                 <div class="form-text">10 digits only</div>
                             </div>
                         </div>
@@ -55,13 +55,13 @@
                             <div class="mb-3">
                                 <label for="graduation_year" class="form-label">Graduation Year *</label>
                                 <input type="number" class="form-control" id="graduation_year" name="graduation_year"
-                                       min="1950" max="{{ current_year or 2025 }}" required>
+                                       min="1950" max="{{ current_year or 2025 }}" value="{% if edit_mode %}{{ alumni.Graduation_Year }}{% endif %}" required>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="experience" class="form-label">Years of Experience</label>
-                                <input type="number" class="form-control" id="experience" name="experience" min="0">
+                                <input type="number" class="form-control" id="experience" name="experience" min="0" value="{% if edit_mode %}{{ alumni.Years_of_Experience }}{% endif %}">
                                 <div class="form-text">Leave blank to auto-calculate</div>
                             </div>
                         </div>
@@ -71,26 +71,26 @@
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="designation" class="form-label">Current Designation</label>
-                                <input type="text" class="form-control" id="designation" name="designation">
+                                <input type="text" class="form-control" id="designation" name="designation" value="{% if edit_mode %}{{ alumni.Current_Designation }}{% endif %}">
                             </div>
                         </div>
                         <div class="col-md-6">
                             <div class="mb-3">
                                 <label for="company" class="form-label">Company</label>
-                                <input type="text" class="form-control" id="company" name="company">
+                                <input type="text" class="form-control" id="company" name="company" value="{% if edit_mode %}{{ alumni.Company }}{% endif %}">
                             </div>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label for="location" class="form-label">Location</label>
-                        <input type="text" class="form-control" id="location" name="location">
+                        <input type="text" class="form-control" id="location" name="location" value="{% if edit_mode %}{{ alumni.Location }}{% endif %}">
                     </div>
 
                     <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                         <a href="{{ url_for('list_alumni') }}" class="btn btn-secondary">Cancel</a>
                         <button type="submit" class="btn btn-primary">
-                            <i class="fas fa-save"></i> Add Alumni
+                            <i class="fas fa-save"></i> {% if edit_mode %}Update Alumni{% else %}Add Alumni{% endif %}
                         </button>
                     </div>
                 </form>

@@ -159,6 +159,53 @@ def add_alumni():
 
     return render_template('alumni/add.html')
 
+@app.route('/alumni/edit/<alumni_id>', methods=['GET', 'POST'])
+def edit_alumni(alumni_id):
+    """Edit existing alumni"""
+    if request.method == 'POST':
+        try:
+            data = request.form
+            query = """
+                UPDATE Alumni SET Name = %s, Phone_Number = %s, Email = %s,
+                                Graduation_Year = %s, Current_Designation = %s,
+                                Company = %s, Location = %s, Years_of_Experience = %s
+                WHERE Alumni_ID = %s
+            """
+            params = (
+                data['name'], data['phone'], data['email'],
+                data['graduation_year'], data['designation'], data['company'],
+                data['location'], data['experience'] or None, alumni_id
+            )
+
+            execute_query(query, params, fetch=False)
+            flash('Alumni updated successfully!', 'success')
+            return redirect(url_for('list_alumni'))
+
+        except Exception as e:
+            flash(f'Error updating alumni: {str(e)}', 'error')
+            # Get alumni data for form repopulation
+            alumni = execute_query("SELECT * FROM Alumni WHERE Alumni_ID = %s", (alumni_id,))
+            return render_template('alumni/add.html', alumni=alumni[0] if alumni else None, edit_mode=True)
+
+    # GET request - fetch alumni data
+    alumni = execute_query("SELECT * FROM Alumni WHERE Alumni_ID = %s", (alumni_id,))
+    if not alumni:
+        flash('Alumni not found!', 'error')
+        return redirect(url_for('list_alumni'))
+
+    return render_template('alumni/add.html', alumni=alumni[0], edit_mode=True)
+
+@app.route('/alumni/delete/<alumni_id>', methods=['POST'])
+def delete_alumni(alumni_id):
+    """Delete alumni"""
+    try:
+        query = "DELETE FROM Alumni WHERE Alumni_ID = %s"
+        execute_query(query, (alumni_id,), fetch=False)
+        flash('Alumni deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting alumni: {str(e)}', 'error')
+    return redirect(url_for('list_alumni'))
+
 # Student Routes
 @app.route('/students')
 def list_students():
@@ -194,6 +241,51 @@ def add_student():
             return render_template('students/add.html')
 
     return render_template('students/add.html')
+
+@app.route('/students/edit/<student_id>', methods=['GET', 'POST'])
+def edit_student(student_id):
+    """Edit existing student"""
+    if request.method == 'POST':
+        try:
+            data = request.form
+            query = """
+                UPDATE Student SET Name = %s, Phone_Number = %s, Email = %s,
+                                  Department = %s, Year_of_Study = %s
+                WHERE Student_ID = %s
+            """
+            params = (
+                data['name'], data['phone'], data['email'],
+                data['department'], data['year_of_study'], student_id
+            )
+
+            execute_query(query, params, fetch=False)
+            flash('Student updated successfully!', 'success')
+            return redirect(url_for('list_students'))
+
+        except Exception as e:
+            flash(f'Error updating student: {str(e)}', 'error')
+            # Get student data for form repopulation
+            student = execute_query("SELECT * FROM Student WHERE Student_ID = %s", (student_id,))
+            return render_template('students/add.html', student=student[0] if student else None, edit_mode=True)
+
+    # GET request - fetch student data
+    student = execute_query("SELECT * FROM Student WHERE Student_ID = %s", (student_id,))
+    if not student:
+        flash('Student not found!', 'error')
+        return redirect(url_for('list_students'))
+
+    return render_template('students/add.html', student=student[0], edit_mode=True)
+
+@app.route('/students/delete/<student_id>', methods=['POST'])
+def delete_student(student_id):
+    """Delete student"""
+    try:
+        query = "DELETE FROM Student WHERE Student_ID = %s"
+        execute_query(query, (student_id,), fetch=False)
+        flash('Student deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting student: {str(e)}', 'error')
+    return redirect(url_for('list_students'))
 
 # Mentorship Session Routes
 @app.route('/sessions')
@@ -240,6 +332,57 @@ def add_session():
     alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name")
     students = execute_query("SELECT Student_ID, Name FROM Student ORDER BY Name")
     return render_template('sessions/add.html', alumni=alumni, students=students)
+
+@app.route('/sessions/edit/<session_id>', methods=['GET', 'POST'])
+def edit_session(session_id):
+    """Edit existing mentorship session"""
+    if request.method == 'POST':
+        try:
+            data = request.form
+            query = """
+                UPDATE MentorshipSession SET Alumni_ID = %s, Student_ID = %s,
+                                           Session_Date = %s, Duration_Minutes = %s, Topic = %s
+                WHERE Session_ID = %s
+            """
+            params = (
+                data['alumni_id'], data['student_id'],
+                data['session_date'], data['duration'], data['topic'], session_id
+            )
+
+            execute_query(query, params, fetch=False)
+            flash('Session updated successfully!', 'success')
+            return redirect(url_for('list_sessions'))
+
+        except Exception as e:
+            flash(f'Error updating session: {str(e)}', 'error')
+            # Get alumni and student lists for dropdown
+            alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name")
+            students = execute_query("SELECT Student_ID, Name FROM Student ORDER BY Name")
+            # Get session data for form repopulation
+            session = execute_query("SELECT * FROM MentorshipSession WHERE Session_ID = %s", (session_id,))
+            return render_template('sessions/add.html', alumni=alumni, students=students, session=session[0] if session else None, edit_mode=True)
+
+    # GET request - fetch session data
+    session = execute_query("SELECT * FROM MentorshipSession WHERE Session_ID = %s", (session_id,))
+    if not session:
+        flash('Session not found!', 'error')
+        return redirect(url_for('list_sessions'))
+
+    # Get alumni and student lists for dropdown
+    alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name")
+    students = execute_query("SELECT Student_ID, Name FROM Student ORDER BY Name")
+    return render_template('sessions/add.html', alumni=alumni, students=students, session=session[0], edit_mode=True)
+
+@app.route('/sessions/delete/<session_id>', methods=['POST'])
+def delete_session(session_id):
+    """Delete mentorship session"""
+    try:
+        query = "DELETE FROM MentorshipSession WHERE Session_ID = %s"
+        execute_query(query, (session_id,), fetch=False)
+        flash('Session deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting session: {str(e)}', 'error')
+    return redirect(url_for('list_sessions'))
 
 # Feedback Routes
 @app.route('/feedback')
@@ -305,6 +448,57 @@ def add_feedback():
     alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name")
     students = execute_query("SELECT Student_ID, Name FROM Student ORDER BY Name")
     return render_template('feedback/add.html', alumni=alumni, students=students)
+
+@app.route('/feedback/edit/<feedback_id>', methods=['GET', 'POST'])
+def edit_feedback(feedback_id):
+    """Edit existing feedback"""
+    if request.method == 'POST':
+        try:
+            data = request.form
+            query = """
+                UPDATE Feedback SET Alumni_ID = %s, Student_ID = %s,
+                                  Rating = %s, Date = %s, Comments = %s
+                WHERE Feedback_ID = %s
+            """
+            params = (
+                data['alumni_id'], data['student_id'],
+                data['rating'], data['feedback_date'], data['comments'], feedback_id
+            )
+
+            execute_query(query, params, fetch=False)
+            flash('Feedback updated successfully!', 'success')
+            return redirect(url_for('list_feedback'))
+
+        except Exception as e:
+            flash(f'Error updating feedback: {str(e)}', 'error')
+            # Get alumni and student lists for dropdown
+            alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name")
+            students = execute_query("SELECT Student_ID, Name FROM Student ORDER BY Name")
+            # Get feedback data for form repopulation
+            feedback = execute_query("SELECT * FROM Feedback WHERE Feedback_ID = %s", (feedback_id,))
+            return render_template('feedback/add.html', alumni=alumni, students=students, feedback=feedback[0] if feedback else None, edit_mode=True)
+
+    # GET request - fetch feedback data
+    feedback = execute_query("SELECT * FROM Feedback WHERE Feedback_ID = %s", (feedback_id,))
+    if not feedback:
+        flash('Feedback not found!', 'error')
+        return redirect(url_for('list_feedback'))
+
+    # Get alumni and student lists for dropdown
+    alumni = execute_query("SELECT Alumni_ID, Name FROM Alumni ORDER BY Name")
+    students = execute_query("SELECT Student_ID, Name FROM Student ORDER BY Name")
+    return render_template('feedback/add.html', alumni=alumni, students=students, feedback=feedback[0], edit_mode=True)
+
+@app.route('/feedback/delete/<feedback_id>', methods=['POST'])
+def delete_feedback(feedback_id):
+    """Delete feedback"""
+    try:
+        query = "DELETE FROM Feedback WHERE Feedback_ID = %s"
+        execute_query(query, (feedback_id,), fetch=False)
+        flash('Feedback deleted successfully!', 'success')
+    except Exception as e:
+        flash(f'Error deleting feedback: {str(e)}', 'error')
+    return redirect(url_for('list_feedback'))
 
 # Connections Route
 @app.route('/connections')

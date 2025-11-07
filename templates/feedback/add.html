@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Add Feedback - Alumni Portal{% endblock %}
+{% block title %}{% if edit_mode %}Edit Feedback{% else %}Add Feedback{% endif %} - Alumni Portal{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Add Feedback</h1>
+    <h1 class="h2">{% if edit_mode %}Edit{% else %}Add{% endif %} Feedback</h1>
     <a href="{{ url_for('list_feedback') }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i> Back to Feedback
     </a>
@@ -17,13 +17,13 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="feedback_id" class="form-label">Feedback ID</label>
-                        <input type="text" class="form-control" id="feedback_id" name="feedback_id" required>
+                        <input type="text" class="form-control" id="feedback_id" name="feedback_id" value="{% if edit_mode %}{{ feedback.Feedback_ID }}{% endif %}" {% if edit_mode %}readonly{% else %}required{% endif %}>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="feedback_date" class="form-label">Feedback Date</label>
-                        <input type="date" class="form-control" id="feedback_date" name="feedback_date" required>
+                        <input type="date" class="form-control" id="feedback_date" name="feedback_date" value="{% if edit_mode and feedback.Date %}{{ feedback.Date.strftime('%Y-%m-%d') }}{% endif %}" required>
                     </div>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                             <option value="">Select Alumni</option>
                             {% if alumni %}
                                 {% for alum in alumni %}
-                                <option value="{{ alum.Alumni_ID }}">{{ alum.Name }}</option>
+                                <option value="{{ alum.Alumni_ID }}" {% if edit_mode and feedback.Alumni_ID == alum.Alumni_ID %}selected{% endif %}>{{ alum.Name }}</option>
                                 {% endfor %}
                             {% endif %}
                         </select>
@@ -49,7 +49,7 @@
                             <option value="">Select Student</option>
                             {% if students %}
                                 {% for student in students %}
-                                <option value="{{ student.Student_ID }}">{{ student.Name }}</option>
+                                <option value="{{ student.Student_ID }}" {% if edit_mode and feedback.Student_ID == student.Student_ID %}selected{% endif %}>{{ student.Name }}</option>
                                 {% endfor %}
                             {% endif %}
                         </select>
@@ -60,8 +60,8 @@
             <div class="mb-3">
                 <label for="rating" class="form-label">Rating (1-5)</label>
                 <div class="d-flex align-items-center">
-                    <input type="range" class="form-range me-3" id="rating" name="rating" min="1" max="5" value="3" required style="width: 200px;">
-                    <span id="rating-value" class="badge bg-primary">3</span>
+                    <input type="range" class="form-range me-3" id="rating" name="rating" min="1" max="5" value="{% if edit_mode %}{{ feedback.Rating }}{% else %}3{% endif %}" required style="width: 200px;">
+                    <span id="rating-value" class="badge bg-primary">{% if edit_mode %}{{ feedback.Rating }}{% else %}3{% endif %}</span>
                 </div>
                 <div class="mt-2" id="rating-stars">
                     <i class="far fa-star text-muted"></i>
@@ -74,13 +74,13 @@
 
             <div class="mb-3">
                 <label for="comments" class="form-label">Comments</label>
-                <textarea class="form-control" id="comments" name="comments" rows="4"></textarea>
+                <textarea class="form-control" id="comments" name="comments" rows="4">{% if edit_mode %}{{ feedback.Comments }}{% endif %}</textarea>
             </div>
 
             <div class="d-flex justify-content-between">
                 <a href="{{ url_for('list_feedback') }}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Add Feedback
+                    <i class="fas fa-save"></i> {% if edit_mode %}Update Feedback{% else %}Add Feedback{% endif %}
                 </button>
             </div>
         </form>

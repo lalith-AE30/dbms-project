@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %}Add Session - Alumni Portal{% endblock %}
+{% block title %}{% if edit_mode %}Edit Session{% else %}Add Session{% endif %} - Alumni Portal{% endblock %}
 
 {% block content %}
 <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
-    <h1 class="h2">Add Mentorship Session</h1>
+    <h1 class="h2">{% if edit_mode %}Edit{% else %}Add{% endif %} Mentorship Session</h1>
     <a href="{{ url_for('list_sessions') }}" class="btn btn-secondary">
         <i class="fas fa-arrow-left"></i> Back to Sessions
     </a>
@@ -17,13 +17,13 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="session_id" class="form-label">Session ID</label>
-                        <input type="text" class="form-control" id="session_id" name="session_id" required>
+                        <input type="text" class="form-control" id="session_id" name="session_id" value="{% if edit_mode %}{{ session.Session_ID }}{% endif %}" {% if edit_mode %}readonly{% else %}required{% endif %}>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="session_date" class="form-label">Session Date</label>
-                        <input type="date" class="form-control" id="session_date" name="session_date" required>
+                        <input type="date" class="form-control" id="session_date" name="session_date" value="{% if edit_mode and session.Session_Date %}{{ session.Session_Date.strftime('%Y-%m-%d') }}{% endif %}" required>
                     </div>
                 </div>
             </div>
@@ -36,7 +36,7 @@
                             <option value="">Select Alumni</option>
                             {% if alumni %}
                                 {% for alum in alumni %}
-                                <option value="{{ alum.Alumni_ID }}">{{ alum.Name }}</option>
+                                <option value="{{ alum.Alumni_ID }}" {% if edit_mode and session.Alumni_ID == alum.Alumni_ID %}selected{% endif %}>{{ alum.Name }}</option>
                                 {% endfor %}
                             {% endif %}
                         </select>
@@ -49,7 +49,7 @@
                             <option value="">Select Student</option>
                             {% if students %}
                                 {% for student in students %}
-                                <option value="{{ student.Student_ID }}">{{ student.Name }}</option>
+                                <option value="{{ student.Student_ID }}" {% if edit_mode and session.Student_ID == student.Student_ID %}selected{% endif %}>{{ student.Name }}</option>
                                 {% endfor %}
                             {% endif %}
                         </select>
@@ -61,13 +61,13 @@
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="duration" class="form-label">Duration (minutes)</label>
-                        <input type="number" class="form-control" id="duration" name="duration" min="1" required>
+                        <input type="number" class="form-control" id="duration" name="duration" min="1" value="{% if edit_mode %}{{ session.Duration_Minutes }}{% endif %}" required>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div class="mb-3">
                         <label for="topic" class="form-label">Topic</label>
-                        <input type="text" class="form-control" id="topic" name="topic">
+                        <input type="text" class="form-control" id="topic" name="topic" value="{% if edit_mode %}{{ session.Topic }}{% endif %}">
                     </div>
                 </div>
             </div>
@@ -75,7 +75,7 @@
             <div class="d-flex justify-content-between">
                 <a href="{{ url_for('list_sessions') }}" class="btn btn-secondary">Cancel</a>
                 <button type="submit" class="btn btn-primary">
-                    <i class="fas fa-save"></i> Add Session
+                    <i class="fas fa-save"></i> {% if edit_mode %}Update Session{% else %}Add Session{% endif %}
                 </button>
             </div>
         </form>
