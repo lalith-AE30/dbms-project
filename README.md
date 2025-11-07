@@ -1,11 +1,13 @@
-# Alumni Mentor Portal Database
+# Alumni Mentor Portal
 
-A comprehensive MySQL database system for managing an alumni-student mentorship program with automated triggers for data integrity and business logic enforcement.
+A comprehensive MySQL database system with a Flask web application for managing an alumni-student mentorship program. Features automated triggers for data integrity, business logic enforcement, and a user-friendly web interface for database operations.
 
 ## 📋 Overview
 
 The Alumni Mentor Portal facilitates mentorship connections between experienced alumni and current students. It includes:
 
+- **Database Layer**: MySQL database with comprehensive schema, triggers, and stored procedures
+- **Web Application**: Flask-based web interface for easy database management
 - Alumni profiles with experience and achievements
 - Student profiles with academic information
 - Mentorship session tracking
@@ -13,6 +15,25 @@ The Alumni Mentor Portal facilitates mentorship connections between experienced 
 - Skill management
 - Industry information
 - Automated triggers for data validation and relationships
+
+## 🌐 Web Application
+
+The Alumni Mentor Portal includes a Flask web application that provides a user-friendly interface for managing the database. The web app features:
+
+### Key Features
+- **Dashboard**: Overview of database statistics and recent activity
+- **Alumni Management**: Add, view, and manage alumni profiles
+- **Student Management**: Add, view, and manage student profiles
+- **Session Management**: Schedule and track mentorship sessions
+- **Feedback System**: Submit and view session feedback
+- **Database Connections**: Direct database query interface
+- **Responsive Design**: Modern HTML templates with Bootstrap styling
+
+### Technology Stack
+- **Backend**: Flask (Python web framework)
+- **Database**: MySQL with mysql-connector-python
+- **Frontend**: HTML5, CSS3, Bootstrap
+- **Templates**: Jinja2 templating engine
 
 ## 🗄️ Database Schema
 
@@ -40,6 +61,8 @@ The Alumni Mentor Portal facilitates mentorship connections between experienced 
 - MySQL 8.0 or higher
 - MySQL command-line client or MySQL Workbench
 - Root or user privileges with CREATE, INSERT, TRIGGER permissions
+- Python 3.11 or higher
+- pip (Python package manager)
 
 ### Installation Steps
 
@@ -97,20 +120,78 @@ The Alumni Mentor Portal facilitates mentorship connections between experienced 
    mysql -u root -p mentor_alumni_portal -e "SHOW TABLES; SHOW TRIGGERS; SHOW PROCEDURE STATUS; SHOW FUNCTION STATUS;"
    ```
 
+### Web Application Setup
+
+1. **Install Python dependencies**
+
+   ```bash
+   pip install -r requirements.txt
+   ```
+
+2. **Configure database connection** (optional)
+
+   Edit `app.py` and update the `DB_CONFIG` dictionary if your MySQL credentials differ:
+   ```python
+   DB_CONFIG = {
+       'host': 'localhost',
+       'user': 'your_username',
+       'password': 'your_password',
+       'database': 'mentor_alumni_portal',
+       'autocommit': True
+   }
+   ```
+
+3. **Run the Flask application**
+
+   ```bash
+   python app.py
+   ```
+
+4. **Access the web interface**
+
+   Open your browser and navigate to: `http://localhost:5000`
+
 ## 📁 File Structure
 
 ```
-dbms/
+dbms-project/
 ├── README.md                         # This documentation
-├── database_schema.sql               # Database tables and sample data
-├── database_triggers.sql             # All database triggers
-├── validate.sql                      # Validation script to test functionality
-├── database_procedures_functions.sql # Advanced stored procedures and functions
-├── additional_triggers.sql           # Additional triggers for enhanced features
-├── simple_procedures.sql             # Simple stored procedures for common tasks
-├── test_new_features.sql             # Test script for new features
+├── pyproject.toml                    # Python project configuration
+├── requirements.txt                  # Python dependencies
+├── app.py                            # Flask web application
+├── test.py                           # Application tests
 ├── feature_summary.md                # Summary of all features
-└── relation_diagram.jpg              # Database relation diagram
+├── sql/                              # Database files
+│   ├── database_schema.sql           # Database tables and sample data
+│   ├── database_triggers.sql         # All database triggers
+│   ├── validate.sql                  # Validation script to test functionality
+│   ├── database_procedures_functions.sql # Advanced stored procedures and functions
+│   ├── additional_triggers.sql       # Additional triggers for enhanced features
+│   ├── simple_procedures.sql         # Simple stored procedures for common tasks
+│   ├── test_new_features.sql         # Test script for new features
+│   ├── test_functions.sql            # Function tests
+│   ├── test_procedures.sql           # Procedure tests
+│   └── relation_diagram.jpg          # Database relation diagram
+└── templates/                        # Flask HTML templates
+    ├── base.html                     # Base template with navigation
+    ├── index.html                    # Home page
+    ├── dashboard.html                # Database statistics dashboard
+    ├── connections.html              # Database connection interface
+    ├── alumni/
+    │   ├── list.html                 # Alumni listing page
+    │   └── add.html                  # Add alumni form
+    ├── students/
+    │   ├── list.html                 # Student listing page
+    │   └── add.html                  # Add student form
+    ├── sessions/
+    │   ├── list.html                 # Session listing page
+    │   └── add.html                  # Add session form
+    ├── feedback/
+    │   ├── list.html                 # Feedback listing page
+    │   └── add.html                  # Add feedback form
+    └── test/
+        ├── procedures.html           # Test procedures interface
+        └── triggers.html             # Test triggers interface
 ```
 
 ## 🎯 Key Features & Triggers
@@ -297,6 +378,51 @@ CALL sp_get_top_mentors(5);
 ```sql
 CALL sp_get_department_stats();
 ```
+
+## 🌐 Web Interface Usage
+
+### Accessing the Application
+
+After starting the Flask application, navigate to `http://localhost:5000` to access the web interface.
+
+### Dashboard
+- View database statistics (alumni count, student count, sessions, feedback)
+- See recent mentorship sessions
+- Monitor system activity at a glance
+
+### Managing Alumni
+1. Navigate to "Alumni" → "View Alumni" to see all alumni
+2. Click "Add Alumni" to create new alumni profiles
+3. Fill in the form with alumni details (ID, name, contact info, professional details)
+4. The system automatically validates data and calculates years of experience
+
+### Managing Students
+1. Navigate to "Students" → "View Students" to see all students
+2. Click "Add Student" to create new student profiles
+3. Fill in student details (ID, name, contact info, department, year of study)
+4. The system validates email uniqueness and academic year
+
+### Scheduling Sessions
+1. Navigate to "Sessions" → "Add Session"
+2. Select alumni and student from dropdowns
+3. Choose session date, mode (Online/In-person), and duration
+4. The system automatically creates mentor-mentee relationships
+
+### Submitting Feedback
+1. Navigate to "Feedback" → "Add Feedback"
+2. Select alumni and student from the session
+3. Enter feedback comments and rating (1-5)
+4. The system logs feedback and updates mentor statistics
+
+### Database Connections
+- Use the "Connections" page to execute custom SQL queries
+- Test database connectivity and view raw results
+- Useful for advanced users and debugging
+
+### Testing Features
+- Use "Test Procedures" to execute stored procedures through the web interface
+- Use "Test Triggers" to validate trigger functionality
+- View results and error messages in real-time
 
 ### Using Functions
 
